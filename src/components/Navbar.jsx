@@ -1,8 +1,8 @@
 import { getAuth, signOut } from "firebase/auth";
 import { toast } from "react-hot-toast";
 import { useAuth } from "../context/useAuth";
-import { useNavigate } from "react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useCart } from "../context/useCart";
 
 export function Navbar() {
   const { currentUser, username, userData } = useAuth();
@@ -17,7 +17,14 @@ export function Navbar() {
       });
   };
 
-  useEffect(()=>{console.log(userData)},[])
+  const [qty, setQty] = useState(0);
+  const {cartItems} = useCart(userData.uid);
+
+  useEffect(() => {
+    cartItems.forEach((item)=>{
+      setQty(qty+item.qty)
+    })
+  }, [cartItems]);
 
   return (
     <div className="navbar bg-slate-950 shadow-sm">
@@ -25,24 +32,36 @@ export function Navbar() {
         <a className="btn btn-ghost text-2xl text-pink-700">Shop-a-Lot</a>
       </div>
       <div className="flex-none">
-        <ul className="menu menu-horizontal px-1 text-xl text-pink-700">
+        <ul className="menu menu-horizontal px-1 text-xl text-pink-700 items-center">
           {currentUser ? (
-            <li className="min-w-30">
-              <details>
-                <summary>{username}</summary>
-                <ul className="bg-slate-950 rounded-t-none p-2">
-                  <li>
-                    <a>Profile</a>
-                  </li>
-                  {userData.isAdmin && (
-                    <li><a href="/admin">Admin</a></li>
-                  )}
-                  <li>
-                    <a onClick={handleSignout}>Logout</a>
-                  </li>
-                </ul>
-              </details>
-            </li>
+            <>
+              <li className="bg-pink-900 rounded-xl w-16 h-9 text-white flex items-center justify-center">
+                Cart
+                <span className="absolute -top-2 -right-2 w-6 h-6 rounded-lg bg-red-700 text-white flex items-center justify-center text-xs font-bold">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-600 opacity-75"></span>
+                  <span className="relative z-10">{qty}</span>{" "}
+                  {/* Replace 3 with your number */}
+                </span>
+              </li>
+              <li>
+                <details className="dropdown">
+                  <summary className="cursor-pointer">{username}</summary>
+                  <ul className="bg-slate-950 rounded-t-none p-2">
+                    <li>
+                      <a>Profile</a>
+                    </li>
+                    {userData.isAdmin && (
+                      <li>
+                        <a href="/admin">Admin</a>
+                      </li>
+                    )}
+                    <li>
+                      <a onClick={handleSignout}>Logout</a>
+                    </li>
+                  </ul>
+                </details>
+              </li>
+            </>
           ) : (
             <>
               <li>

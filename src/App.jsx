@@ -5,6 +5,7 @@ import Signup from "./pages/SignUp"
 import Login from "./pages/Login.jsx"
 import { Navbar } from "./components/Navbar.jsx"
 import Admin from "./pages/Admin.jsx"
+import Homepage from "./pages/Homepage.jsx"
 
 function App() {
   const {currentUser, username} = useAuth();
@@ -15,7 +16,7 @@ function App() {
     <Navbar username={username}/>
     <BrowserRouter>
       <Routes>
-        <Route index element={currentUser?<h1>{username}</h1>:<h1>Homepage</h1>} />
+        <Route index element={<Homepage />} />
         <Route path="/signup" element={<Signup />}/>
         <Route path="/login" element={<Login />}/>
         <Route path="/admin" element={<Admin></Admin>}/>

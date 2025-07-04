@@ -13,7 +13,7 @@ function ProductGrid(props){
         <div className="grid lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 place-items-center mt-5">
             {prods.map((doc)=>{
                 return(
-                    <ProductCard name={doc.name} desc={doc.desc} price={doc.price} imageUrl={doc.imageUrl} category={doc.category} stock={doc.stock}/>
+                    <ProductCard key={doc.id} prodId={doc.id} name={doc.name} desc={doc.desc} price={doc.price} imageUrl={doc.imageUrl} category={doc.category} stock={doc.stock}/>
                 )
             })}
         </div>

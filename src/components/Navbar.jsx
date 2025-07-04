@@ -17,15 +17,6 @@ export function Navbar() {
       });
   };
 
-  const [qty, setQty] = useState(0);
-  const {cartItems} = useCart(userData.uid);
-
-  useEffect(() => {
-    cartItems.forEach((item)=>{
-      setQty(qty+item.qty)
-    })
-  }, [cartItems]);
-
   return (
     <div className="navbar bg-slate-950 shadow-sm">
       <div className="flex-1">
@@ -37,11 +28,6 @@ export function Navbar() {
             <>
               <li className="bg-pink-900 rounded-xl w-16 h-9 text-white flex items-center justify-center">
                 Cart
-                <span className="absolute -top-2 -right-2 w-6 h-6 rounded-lg bg-red-700 text-white flex items-center justify-center text-xs font-bold">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-600 opacity-75"></span>
-                  <span className="relative z-10">{qty}</span>{" "}
-                  {/* Replace 3 with your number */}
-                </span>
               </li>
               <li>
                 <details className="dropdown">

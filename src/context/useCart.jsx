@@ -52,6 +52,7 @@ export const useCart = (userId) => {
   };
 
  const removeFromCart = async (userId, productId) => {
+  setUpdating(true)
 if (!userId || !productId) {
 console.error("Missing userId or productId");
 return;
@@ -78,6 +79,7 @@ current.splice(index, 1); // remove completely if qty is 1
 // Save updated cart
 await setDoc(cartRef, { cartItems: current });
 setCartItems(current); // <- Make sure you update state manually!
+setUpdating(false)
 };
   return { cartItems, addToCart, removeFromCart, updating };
 };

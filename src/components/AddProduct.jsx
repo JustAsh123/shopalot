@@ -1,17 +1,41 @@
 import { addDoc, collection } from "firebase/firestore";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { db } from "../firebase/firebase";
 import { useNavigate } from "react-router";
 import toast from "react-hot-toast";
+import { getDocs } from "firebase/firestore";
 
 export default function AddProduct() {
   const [name, setName] = useState("");
   const [desc, setDesc] = useState("");
   const [price, setPrice] = useState(0);
   const [imageFile, setImageFile] = useState(null);
-  const [category, setCategory] = useState("");
+  const [categories, setCategories] = useState([]);
   const [stock, setStock] = useState(0);
   const navigate = useNavigate();
+  const [category, setCategory] = useState("");
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        console.log("🔥 Fetching categories...");
+        const snapshot = await getDocs(collection(db, "categories"));
+
+        const categoriesData = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(), // expects fields like name, slug
+        }));
+
+        console.log("✅ Categories fetched:", categoriesData);
+        setCategories(categoriesData);
+      } catch (error) {
+        console.error("❌ Error fetching categories:", error);
+        setCategories([]); // fallback
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const handleImageUpload = async (file) => {
     const data = new FormData();
@@ -32,25 +56,24 @@ export default function AddProduct() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try{
-        let imageUrl = "";
-        if(imageFile){
-            imageUrl = await handleImageUpload(imageFile);
-        }
-        await addDoc(collection(db,"products"),{
-            name,
-            desc,
-            price,
-            imageUrl,
-            category,
-            stock
-        })
-        toast.success("Successfully added the product.")
-        navigate('/')
-    } catch(err){
-        toast.error(err.message)
+    try {
+      let imageUrl = "";
+      if (imageFile) {
+        imageUrl = await handleImageUpload(imageFile);
+      }
+      await addDoc(collection(db, "products"), {
+        name,
+        desc,
+        price,
+        imageUrl,
+        category,
+        stock,
+      });
+      toast.success("Successfully added the product.");
+      navigate("/");
+    } catch (err) {
+      toast.error(err.message);
     }
-
   };
 
   return (
@@ -60,7 +83,7 @@ export default function AddProduct() {
         className="btn outline-success outline-solid"
         onClick={() => document.getElementById("my_modal_3").showModal()}
       >
-        Add New Product
+        Add new Product
       </button>
       <dialog id="my_modal_3" className="modal">
         <div className="modal-box">
@@ -101,13 +124,10 @@ export default function AddProduct() {
               placeholder="Image"
               className="text-xl outline-white outline-solid"
             />
-            <input
-              type="text"
-              onChange={(e) => setCategory(e.target.value)}
-              autoComplete="none"
-              placeholder="Category"
-              className="text-xl outline-white outline-solid"
-            />
+            <select defaultValue="Pick a Category" className="select" onClick={(e)=>setCategory(e.target.value)}>
+              <option disabled={true}>Pick a Category</option>
+              {categories.map((cat)=><option>{cat.name}</option>)}
+            </select>
             <input
               type="number"
               onChange={(e) => setStock(e.target.value)}
@@ -116,7 +136,12 @@ export default function AddProduct() {
               className="text-xl outline-white outline-solid"
             />
 
-            <button onClick={handleSubmit} className="btn bg-pink-800 text-white text-2xl">Add</button>
+            <button
+              onClick={handleSubmit}
+              className="btn bg-pink-800 text-white text-2xl"
+            >
+              Add
+            </button>
           </div>
         </div>
       </dialog>

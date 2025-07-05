@@ -4,38 +4,17 @@ import { db } from "../firebase/firebase";
 import { useNavigate } from "react-router";
 import toast from "react-hot-toast";
 import { getDocs } from "firebase/firestore";
+import { useCategory } from "../context/useCategory";
 
 export default function AddProduct() {
   const [name, setName] = useState("");
   const [desc, setDesc] = useState("");
   const [price, setPrice] = useState(0);
   const [imageFile, setImageFile] = useState(null);
-  const [categories, setCategories] = useState([]);
+  const {categories} = useCategory()
   const [stock, setStock] = useState(0);
   const navigate = useNavigate();
   const [category, setCategory] = useState("");
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        console.log("🔥 Fetching categories...");
-        const snapshot = await getDocs(collection(db, "categories"));
-
-        const categoriesData = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(), // expects fields like name, slug
-        }));
-
-        console.log("✅ Categories fetched:", categoriesData);
-        setCategories(categoriesData);
-      } catch (error) {
-        console.error("❌ Error fetching categories:", error);
-        setCategories([]); // fallback
-      }
-    };
-
-    fetchCategories();
-  }, []);
 
   const handleImageUpload = async (file) => {
     const data = new FormData();
@@ -126,7 +105,7 @@ export default function AddProduct() {
             />
             <select defaultValue="Pick a Category" className="select" onClick={(e)=>setCategory(e.target.value)}>
               <option disabled={true}>Pick a Category</option>
-              {categories.map((cat)=><option>{cat.name}</option>)}
+              {categories.map((cat)=><option key={cat.id} value={cat.id}>{cat.name}</option>)}
             </select>
             <input
               type="number"

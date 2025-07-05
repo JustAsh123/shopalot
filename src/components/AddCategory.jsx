@@ -7,11 +7,33 @@ import { useNavigate } from "react-router";
 export default function AddCategory(){
     const [n, setN] = useState("")
     const [loading, setLoading] = useState(false)
+    const [file, setFile] = useState(null)
     const navigate = useNavigate();
+
+    const handleImageUpload = async (file) => {
+      const data = new FormData();
+      data.append("file",file);
+      data.append("upload_preset","product_uploads")
+
+      const res = await fetch(
+        "https://api.cloudinary.com/v1_1/dxuf6i2s5/image/upload",
+        {
+          method:"POST",
+          body:data,
+        }
+      )
+      const json = await res.json();
+      return json.secure_url;
+    }
+    
     const addCategory = async (name) =>{
         setLoading(true)
+        let image_url = "";
+        if(file){
+          image_url = await handleImageUpload(file);
+        }
         const slug = name.toLowerCase().replace(/\s+/g,'-');
-        await addDoc(collection(db,'categories'),{name,slug})
+        await addDoc(collection(db,'categories'),{name,slug,image_url})
         setLoading(false)
         toast.success("Category Added successfully.")
         navigate("/")
@@ -42,6 +64,12 @@ export default function AddCategory(){
               onChange={(e) => setN(e.target.value)}
               autoComplete="none"
               placeholder="Name"
+              className="text-xl outline-white outline-solid"
+            />
+            <input
+              type="file"
+              onChange={(e) => setFile(e.target.files[0])}
+              placeholder="Image"
               className="text-xl outline-white outline-solid"
             />
             <button onClick={()=>addCategory(n)} className="btn bg-pink-800 text-white text-2xl" disabled={loading}>{loading?"Adding...":"Add"}</button>

@@ -1,5 +1,4 @@
 import ProductGrid from "../components/ProductGrid"
-
 function Homepage(){
     return(
         <>

@@ -2,143 +2,110 @@ import { useCart } from "../context/useCart";
 import { useAuth } from "../context/useAuth";
 import { Loader } from "lucide-react";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
-function ProductCard(props) {
+function ProductCard({ prodId, id, imageUrl, name, price, desc }) {
   const { userData } = useAuth();
-  const { addToCart, removeFromCart, cartItems, updating } = useCart(userData.uid);
   const [qty, setQty] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  const { addToCart, removeFromCart, cartItems, updating } = userData ? useCart(userData.uid) : {};
 
   useEffect(() => {
-    console.log("Debug - Current cart items:", cartItems);
-    console.log("Debug - Looking for product:", { 
-      prodId: props.prodId, 
-      id: props.id 
-    });
-
-    const item = cartItems.find(item => 
-      item.prodId === props.prodId || 
-      item.id === props.prodId || 
-      item.id === props.id
-    );
-    
-    console.log("Debug - Found item:", item);
-    setQty(item ? item.qty : 0);
-  }, [cartItems, props.id, props.prodId]);
+    if (userData) {
+      const item = cartItems.find(item => 
+        item.prodId === prodId || 
+        item.id === prodId || 
+        item.id === id
+      );
+      setQty(item ? item.qty : 0);
+    }
+  }, [cartItems, userData, id, prodId]);
 
   const handleAddToCart = () => {
-    if (!updating) {
-      addToCart(userData.uid, props.prodId);
+    if (!updating && userData) {
+      addToCart(userData.uid, prodId);
+    } else {
+      toast.error("Please login to do that.");
     }
   };
 
   const handleRemoveFromCart = () => {
     if (!updating) {
-      removeFromCart(userData.uid, props.prodId);
+      removeFromCart(userData.uid, prodId);
     }
+  };
+
+  const renderCartButtons = () => {
+    if (updating) {
+      return <Loader className="animate-spin" />;
+    }
+    return qty === 0 ? (
+      <button
+        onClick={handleAddToCart}
+        className="bg-blue-600 px-4 py-2 rounded text-white cursor-pointer"
+      >
+        Add to cart
+      </button>
+    ) : (
+      <div className="flex items-center gap-2">
+        <button
+          onClick={handleRemoveFromCart}
+          className="bg-red-600 px-2 py-1 rounded text-white cursor-pointer"
+        >
+          -
+        </button>
+        <span className="text-white font-medium">{qty}</span>
+        <button
+          onClick={handleAddToCart}
+          className="bg-green-600 px-2 py-1 rounded text-white cursor-pointer"
+        >
+          +
+        </button>
+      </div>
+    );
   };
 
   return (
     <>
       <div className="card bg-base-200 w-96 shadow-sm shadow-blue-800">
-        <figure className="bg-white" onClick={() => document.getElementById(`product_modal_${props.prodId}`).showModal()}>
-          <img src={props.imageUrl} alt={props.name} className="h-70" />
+        <figure className="bg-white" onClick={() => setIsModalOpen(true)}>
+          <img src={imageUrl} alt={name} className="h-70" />
         </figure>
         <div className="card-body">
           <h2 
-            onClick={() => document.getElementById(`product_modal_${props.prodId}`).showModal()} 
+            onClick={() => setIsModalOpen(true)} 
             className="card-title"
           >
-            {props.name}
+            {name}
           </h2>
           <div className="card-actions justify-between">
             <p className="flex flex-row mt-3 text-xl text-yellow-500">
-              ₹{props.price}
+              ₹{price}
             </p>
-            
-            {/* Restored your original updating logic */}
-            {qty === 0 ? (
-              updating ? (
-                <Loader className="animate-spin" />
-              ) : (
-                <button
-                  onClick={handleAddToCart}
-                  className="bg-blue-600 px-4 py-2 rounded text-white cursor-pointer"
-                >
-                  Add to cart
-                </button>
-              )
-            ) : (
-              updating ? (
-                <Loader className="animate-spin" />
-              ) : (
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={handleRemoveFromCart}
-                    className="bg-red-600 px-2 py-1 rounded text-white cursor-pointer"
-                  >
-                    -
-                  </button>
-                  <span className="text-white font-medium">{qty}</span>
-                  <button
-                    onClick={handleAddToCart}
-                    className="bg-green-600 px-2 py-1 rounded text-white cursor-pointer"
-                  >
-                    +
-                  </button>
-                </div>
-              )
-            )}
+            {renderCartButtons()}
           </div>
         </div>
       </div>
 
-      <dialog id={`product_modal_${props.prodId}`} className="modal">
-        <div className="modal-box">
-          <figure className="bg-white flex justify-center">
-            <img src={props.imageUrl} alt={props.name} className="h-80" />
-          </figure>
-          <h3 className="font-bold text-xl mt-3">{props.name}</h3>
-          <p className="py-4">{props.desc}</p>
-          <div className="flex justify-between items-center">
-            <p className="text-yellow-400 text-xl">₹{props.price}</p>
-            {qty === 0 ? (
-              updating ? (
-                <Loader className="animate-spin" />
-              ) : (
-                <button
-                  onClick={handleAddToCart}
-                  className="bg-blue-600 px-4 py-2 rounded text-white cursor-pointer"
-                >
-                  Add to cart
-                </button>
-              )
-            ) : (
-              updating ? (
-                <Loader className="animate-spin" />
-              ) : (
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={handleRemoveFromCart}
-                    className="bg-red-600 px-2 py-1 rounded text-white cursor-pointer"
-                  >
-                    -
-                  </button>
-                  <span className="text-white font-medium">{qty}</span>
-                  <button
-                    onClick={handleAddToCart}
-                    className="bg-green-600 px-2 py-1 rounded text-white cursor-pointer"
-                  >
-                    +
-                  </button>
-                </div>
-              )
-            )}
+      {isModalOpen && (
+        <dialog className="modal" open>
+          <div className="modal-box">
+            <figure className="bg-white flex justify-center">
+              <img src={imageUrl} alt={name} className="h-80" />
+            </figure>
+            <h3 className="font-bold text-xl mt-3">{name}</h3>
+            <p className="py-4">{desc}</p>
+            <div className="flex justify-between items-center">
+              <p className="text-yellow-400 text-xl">₹{price}</p>
+              {renderCartButtons()}
+            </div>
           </div>
-        </div>
-        <form method="dialog" className="modal-backdrop">
-          <button>close</button>
-        </form>
-      </dialog>
+          <form method="dialog" className="modal-backdrop">
+            <button onClick={() => setIsModalOpen(false)}>close</button>
+          </form>
+        </dialog>
+      )}
     </>
   );
 }

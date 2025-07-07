@@ -1,11 +1,13 @@
 import { getAuth, signOut } from "firebase/auth";
 import { toast } from "react-hot-toast";
 import { useAuth } from "../context/useAuth";
-import { useEffect, useState } from "react";
-import { useCart } from "../context/useCart";
+import { useCategory } from "../context/useCategory";
+import { useEffect } from "react";
 
 export function Navbar() {
-  const { currentUser, username, userData } = useAuth();
+  const { currentUser , username, userData, loading: userLoading } = useAuth();
+  const { categories, loading: categoriesLoading } = useCategory();
+
   const handleSignout = async () => {
     const auth = getAuth();
     await signOut(auth)
@@ -17,16 +19,38 @@ export function Navbar() {
       });
   };
 
+  // Check if user data is still loading
+  if (userLoading || categoriesLoading) {
+    return <div className="navbar bg-slate-900 text-pink-300 shadow-sm">Loading...</div>;
+  }
+
   return (
-    <div className="navbar bg-slate-950 shadow-sm">
+    <div className="navbar bg-slate-900 text-pink-300 shadow-sm">
       <div className="flex-1">
-        <a className="btn btn-ghost text-2xl text-pink-700">Shop-a-Lot</a>
+        <a className="text-2xl cursor-pointer ml-4">Shop-a-Lot</a>
       </div>
       <div className="flex-none">
-        <ul className="menu menu-horizontal px-1 text-xl text-pink-700 items-center">
-          {currentUser ? (
+        <ul className="menu menu-horizontal px-1 text-xl items-center">
+          <li>
+            <div className="dropdown dropdown-bottom dropdown-end">
+              <div tabIndex={0} role="button">
+                Categories
+              </div>
+              <ul
+                tabIndex={0}
+                className="dropdown-content menu bg-slate-950 text-xl rounded-box z-1 w-52 shadow-sm"
+              >
+                {categories.map((cat) => (
+                  <li className="p-2 rounded-sm transition-all cursor-pointer hover:bg-slate-800" key={cat.id}>
+                    {cat.name}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </li>
+          {currentUser  ? (
             <>
-              <li className="bg-pink-900 rounded-xl w-16 h-9 text-white flex items-center justify-center">
+              <li className="outline outline-pink-500 hover:bg-pink-900 hover:text-white transition-all cursor-pointer rounded-xl w-16 py-1 flex items-center justify-center">
                 Cart
               </li>
               <li>
@@ -36,7 +60,7 @@ export function Navbar() {
                     <li>
                       <a>Profile</a>
                     </li>
-                    {userData.isAdmin && (
+                    {userData && userData.isAdmin && (
                       <li>
                         <a href="/admin">Admin</a>
                       </li>
@@ -58,7 +82,7 @@ export function Navbar() {
               <li>
                 <a
                   href="/login"
-                  className="btn ml-4 outline-pink-700 outline-solid bg-none"
+                  className="btn ml-4 outline-pink-500 outline-solid bg-none"
                 >
                   Login
                 </a>

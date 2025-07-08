@@ -58,7 +58,7 @@ export function Navbar() {
                   <summary className="cursor-pointer">{username}</summary>
                   <ul className="bg-slate-950 rounded-t-none p-2">
                     <li>
-                      <a>Profile</a>
+                      <a href="/profile">Profile</a>
                     </li>
                     {userData && userData.isAdmin && (
                       <li>

@@ -62,7 +62,6 @@ export default function Signup(){
             await setDoc(doc(db, "users", userCred.user.uid),{
                 username:un,
                 email:em,
-                address:"",
                 isAdmin:false,
                 phoneNumber:"",
                 uid:userCred.user.uid

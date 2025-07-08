@@ -5,9 +5,10 @@ import { useEffect, useState } from "react";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import toast from "react-hot-toast";
+import { AddAddress } from "../components/AddAddress";
 
 export function Profile() {
-  const { currentUser , userData, username, setUserData } = useAuth(); // Get setUser Data from context
+  const { currentUser, userData, username, setUserData } = useAuth(); // Get setUser Data from context
   const [isEditingPhone, setIsEditingPhone] = useState(false);
   const [newPhone, setNewPhone] = useState("");
   const [phoneValid, setPhoneValid] = useState(false);
@@ -19,7 +20,7 @@ export function Profile() {
     setPhoneValid(newPhone.length === 10);
   }, [newPhone]);
 
-  if (!currentUser ) navigate("/login");
+  if (!currentUser) navigate("/login");
 
   const handleEditPhone = async () => {
     if (!phoneValid) return toast.error("Enter a valid Phone Number.");
@@ -61,10 +62,7 @@ export function Profile() {
                     }
                     onChange={(e) => setNewPhone(e.target.value)}
                   />
-                  <button
-                    className="btn btn-success"
-                    onClick={handleEditPhone}
-                  >
+                  <button className="btn btn-success" onClick={handleEditPhone}>
                     <Check size={18} />
                   </button>
                   <button
@@ -80,7 +78,11 @@ export function Profile() {
             </>
           ) : (
             <>
-              <p className="font-bold">{userData.phoneNumber === "" ? " Not Set" : userData.phoneNumber}</p>
+              <p className="font-bold">
+                {userData.phoneNumber === ""
+                  ? " Not Set"
+                  : userData.phoneNumber}
+              </p>
               <button
                 className="btn btn-ghost"
                 onClick={() => setIsEditingPhone(true)}
@@ -90,6 +92,19 @@ export function Profile() {
             </>
           )}
         </p>
+        <div className="text-2xl flex flex-col gap-2">
+          <p>My Addresses : </p>
+          <div className="ml-8 flex flex-col gap-2">
+            {userData.address.length === 0 ? (
+              <p className="text-red-700">You don't have any addresses.</p>
+            ) : (
+              "Wait"
+            )}
+            <div className="flex flex-row gap-4">
+                <AddAddress />
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );

@@ -9,20 +9,20 @@ const AuthContext = createContext();
 
 // Provider component
 export function AuthProvider({ children }) {
-  const [currentUser, setCurrentUser] = useState(null);
+  const [currentUser , setCurrentUser ] = useState(null);
   const [username, setUsername] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [userData, setUserData] = useState(null)
+  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setCurrentUser(user);
+      setCurrentUser (user);
       if (user) {
         const docRef = doc(db, "users", user.uid);
         const snap = await getDoc(docRef);
         if (snap.exists()) {
           setUsername(snap.data().username);
-          setUserData(snap.data())
+          setUserData(snap.data());
         } else {
           setUsername(null);
         }
@@ -36,7 +36,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ currentUser, username, userData }}>
+    <AuthContext.Provider value={{ currentUser , username, userData, setUserData }}>
       {!loading && children}
     </AuthContext.Provider>
   );

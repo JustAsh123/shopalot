@@ -7,7 +7,7 @@ import { db } from "../firebase/firebase";
 import toast from "react-hot-toast";
 
 export function Profile() {
-  const { currentUser, userData, username } = useAuth();
+  const { currentUser , userData, username, setUserData } = useAuth(); // Get setUser Data from context
   const [isEditingPhone, setIsEditingPhone] = useState(false);
   const [newPhone, setNewPhone] = useState("");
   const [phoneValid, setPhoneValid] = useState(false);
@@ -16,30 +16,30 @@ export function Profile() {
 
   useEffect(() => {
     console.log(newPhone);
-    if (newPhone.length != 10) {
-      setPhoneValid(false);
-    }
-    if (newPhone.length == 10) {
-      setPhoneValid(true);
-    }
+    setPhoneValid(newPhone.length === 10);
   }, [newPhone]);
 
-  if (!currentUser) navigate("/login");
+  if (!currentUser ) navigate("/login");
 
   const handleEditPhone = async () => {
-    if(!phoneValid) return toast.error("Enter a valid Phone Number.")
+    if (!phoneValid) return toast.error("Enter a valid Phone Number.");
     setUpdatingPhone(true);
     const userDoc = doc(db, "users", userData.uid);
     try {
       await updateDoc(userDoc, {
         phoneNumber: newPhone,
       });
-      toast.success("Phone number updated.")
+      // Update local userData state
+      setUserData((prevData) => ({
+        ...prevData,
+        phoneNumber: newPhone,
+      }));
+      toast.success("Phone number updated.");
     } catch (err) {
-        toast.error(err.message)
+      toast.error(err.message);
     } finally {
-        setIsEditingPhone(false);
-        setUpdatingPhone(false);
+      setIsEditingPhone(false);
+      setUpdatingPhone(false);
     }
   };
 
@@ -49,36 +49,38 @@ export function Profile() {
         <h1 className="text-4xl">Hello, {username}</h1>
         <hr className="my-8 h-0.5 border-t-0 bg-neutral-100 dark:bg-white/10" />
         <p className="text-2xl flex flex-row gap-2">
-          Phone Number :{" "}
+          Phone Number:{" "}
           {isEditingPhone ? (
             <>
-              {!updatingPhone?(
+              {!updatingPhone ? (
                 <>
-              <input
-                type="text"
-                className={
-                  phoneValid ? "input input-success" : "input input-error"
-                }
-                onChange={(e) => setNewPhone(e.target.value)}
-              ></input>
-              <button
-                className="btn btn-success"
-                onClick={handleEditPhone}
-              >
-                <Check size={18} />
-              </button>
-              <button
-                className="btn btn-error"
-                onClick={() => setIsEditingPhone(false)}
-              >
-                <X size={18} />
-              </button>
-            </>
-              ): (<Loader className="animate-spin" size={18}/>)}
+                  <input
+                    type="text"
+                    className={
+                      phoneValid ? "input input-success" : "input input-error"
+                    }
+                    onChange={(e) => setNewPhone(e.target.value)}
+                  />
+                  <button
+                    className="btn btn-success"
+                    onClick={handleEditPhone}
+                  >
+                    <Check size={18} />
+                  </button>
+                  <button
+                    className="btn btn-error"
+                    onClick={() => setIsEditingPhone(false)}
+                  >
+                    <X size={18} />
+                  </button>
+                </>
+              ) : (
+                <Loader className="animate-spin" size={18} />
+              )}
             </>
           ) : (
             <>
-              {userData.phoneNumber == "" ? " Not Set" : userData.phoneNumber}
+              <p className="font-bold">{userData.phoneNumber === "" ? " Not Set" : userData.phoneNumber}</p>
               <button
                 className="btn btn-ghost"
                 onClick={() => setIsEditingPhone(true)}

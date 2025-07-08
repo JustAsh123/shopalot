@@ -3,12 +3,15 @@ import { useAuth } from "../context/useAuth";
 import { Loader } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { useCategory } from "../context/useCategory";
 
-function ProductCard({ prodId, id, imageUrl, name, price, desc }) {
+function ProductCard({ prodId, id, imageUrl, name, price, desc, category }) {
   const { userData } = useAuth();
   const [qty, setQty] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
+  const { categories, loading } = useCategory(); // Get categories from the hook
+  const [categoryName, setCategoryName] = useState("");
+
   const { addToCart, removeFromCart, cartItems, updating } = userData ? useCart(userData.uid) : {};
 
   useEffect(() => {
@@ -21,6 +24,14 @@ function ProductCard({ prodId, id, imageUrl, name, price, desc }) {
       setQty(item ? item.qty : 0);
     }
   }, [cartItems, userData, id, prodId]);
+
+  // Find the category name based on the category ID passed as a prop
+  useEffect(() => {
+    if (categories.length > 0) {
+      const foundCategory = categories.find(cat => cat.id === category);
+      setCategoryName(foundCategory ? foundCategory.name : "Unknown Category");
+    }
+  }, [categories, category]);
 
   const handleAddToCart = () => {
     if (!updating && userData) {
@@ -78,6 +89,7 @@ function ProductCard({ prodId, id, imageUrl, name, price, desc }) {
             className="card-title"
           >
             {name}
+            <div className="badge badge-outline badge-secondary">{categoryName}</div>
           </h2>
           <div className="card-actions justify-between">
             <p className="flex flex-row mt-3 text-xl text-yellow-500">

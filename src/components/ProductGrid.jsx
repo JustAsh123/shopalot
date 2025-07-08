@@ -3,6 +3,8 @@ import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import { useEffect, useState } from "react";
 import { useProducts } from "../context/useProducts";
+import { useCart } from "../context/useCart";
+import { useAuth } from "../context/useAuth";
 
 function ProductGrid(props){
     const {prods, loading, error} = useProducts();

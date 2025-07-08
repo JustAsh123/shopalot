@@ -51,7 +51,7 @@ export function Navbar() {
           {currentUser  ? (
             <>
               <li className="outline outline-pink-500 hover:bg-pink-900 hover:text-white transition-all cursor-pointer rounded-xl w-16 py-1 flex items-center justify-center">
-                Cart
+                <a href="/cart">Cart</a>
               </li>
               <li>
                 <details className="dropdown">

@@ -6,9 +6,10 @@ import Login from "./pages/Login.jsx"
 import { Navbar } from "./components/Navbar.jsx"
 import Admin from "./pages/Admin.jsx"
 import Homepage from "./pages/Homepage.jsx"
+import Cart from "./pages/Cart.jsx"
 
 function App() {
-  const {currentUser, username} = useAuth();
+  const {currentUser, username, userData} = useAuth();
 
   return (
     <>
@@ -19,7 +20,8 @@ function App() {
         <Route index element={<Homepage />} />
         <Route path="/signup" element={<Signup />}/>
         <Route path="/login" element={<Login />}/>
-        <Route path="/admin" element={<Admin></Admin>}/>
+        <Route path="/admin" element={<Admin />}/>
+        <Route path="/cart" element={<Cart />}/>
         <Route path="*" element={<h1>No Page Found</h1>}/>
       </Routes>
     </BrowserRouter>

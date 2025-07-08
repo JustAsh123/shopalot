@@ -16,7 +16,7 @@ export const useCart = (userId) => {
       }
     };
     fetchCart();
-  }, [userId]);
+  }, [userId, cartItems]);
 
   const addToCart = async (userId, productId) => {
     setUpdating(true)

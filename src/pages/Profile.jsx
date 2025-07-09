@@ -2,28 +2,29 @@ import { useAuth } from "../context/useAuth";
 import { useNavigate } from "react-router";
 import { Pencil, X, Check, Loader } from "lucide-react";
 import { useEffect, useState } from "react";
-import { doc, updateDoc, getDoc } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import toast from "react-hot-toast";
 import { AddAddress } from "../components/AddAddress";
+import { AddressCard } from "../components/AddressCard"; // Import AddressCard
+import { useAddresses } from "../context/useAddress"; // Import the useAddresses hook
 
 export function Profile() {
-  const { currentUser, userData, username, setUserData } = useAuth(); // Get setUser Data from context
+  const { currentUser , userData, username, setUserData } = useAuth();
   const [isEditingPhone, setIsEditingPhone] = useState(false);
   const [newPhone, setNewPhone] = useState("");
   const [phoneValid, setPhoneValid] = useState(false);
   const [updatingPhone, setUpdatingPhone] = useState(false);
   const navigate = useNavigate();
-  const [addresses, setAddresses] = useState([]);
   
-  useEffect(()=>{},[addresses])
+  // Use the custom hook to manage addresses
+  const { addresses, loading, error, removeAddress , setAddresses } = useAddresses();
 
   useEffect(() => {
-    console.log(newPhone);
     setPhoneValid(newPhone.length === 10);
   }, [newPhone]);
 
-  if (!currentUser) navigate("/login");
+  if (!currentUser ) navigate("/login");
 
   const handleEditPhone = async () => {
     if (!phoneValid) return toast.error("Enter a valid Phone Number.");
@@ -45,6 +46,12 @@ export function Profile() {
       setIsEditingPhone(false);
       setUpdatingPhone(false);
     }
+  };
+
+  // Function to handle adding a new address
+  const handleAddAddress = (newAddress) => {
+    // Update the local addresses state
+    setAddresses((prevAddresses) => [...prevAddresses, newAddress]);
   };
 
   return (
@@ -96,15 +103,30 @@ export function Profile() {
           )}
         </p>
         <div className="text-2xl flex flex-col gap-2">
-          <p>My Addresses : </p>
+          <p>My Addresses:</p>
           <div className="ml-8 flex flex-col gap-2">
-            {userData.addresses.length === 0 ? (
+            {loading ? (
+              <p>Loading addresses...</p>
+            ) : error ? (
+              <p className="text-red-700">Error loading addresses.</p>
+            ) : addresses.length === 0 ? (
               <p className="text-red-700">You don't have any addresses.</p>
             ) : (
-              "Wait"
+              addresses.map((address) => (
+                <AddressCard
+                  key={address.id}
+                  houseNo={address.houseNo}
+                  street={address.street}
+                  locality={address.locality}
+                  pincode={address.pincode}
+                  city={address.city}
+                  state={address.state}
+                  onDelete={() => removeAddress(address.id)} // Pass delete handler
+                />
+              ))
             )}
             <div className="flex flex-row gap-4">
-                <AddAddress />
+              <AddAddress onAdd={handleAddAddress} /> {/* Pass addAddress handler */}
             </div>
           </div>
         </div>

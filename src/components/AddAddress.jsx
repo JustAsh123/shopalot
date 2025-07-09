@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { doc, setDoc , getDoc, updateDoc} from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import { useAuth } from "../context/useAuth";
 import { Loader } from "lucide-react";
 
-export function AddAddress() {
+export function AddAddress({ onAdd }) { // Accept onAdd prop
   const [houseNo, setHouseNo] = useState("");
   const [street, setStreet] = useState("");
   const [locality, setLocality] = useState("");
@@ -13,24 +13,17 @@ export function AddAddress() {
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const {currentUser, username, userData} = useAuth();
+  const { currentUser  } = useAuth();
 
   const validateForm = () => {
-    if (
-      houseNo.trim() !== "" &&
-      street.trim() !== "" &&
-      pincode.trim() !== ""
-    )
-      return true;
-    return false;
+    return houseNo.trim() !== "" && street.trim() !== "" && pincode.trim() !== "";
   };
 
-  useEffect(()=>{
-    if(pincode.length===6) fetchArea(pincode)
-  },[pincode])
+  useEffect(() => {
+    if (pincode.length === 6) fetchArea(pincode);
+  }, [pincode]);
 
   const fetchArea = async (pincode) => {
-    // 1. Validate pincode format (6 digits for Indian PIN codes)
     const pinRegex = /^[1-9][0-9]{5}$/;
     if (!pinRegex.test(pincode)) {
       toast.error("Please enter a valid 6-digit pincode");
@@ -38,22 +31,15 @@ export function AddAddress() {
     }
 
     try {
-      // 2. Show loading state
       setIsLoading(true);
-
-      // 3. API call (using Postalpincode.in as example)
-      const response = await fetch(
-        `https://api.postalpincode.in/pincode/${pincode}`
-      );
+      const response = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
       const data = await response.json();
 
-      // 4. Check API response
       if (data[0].Status === "Error") {
         toast.error("Invalid pincode or no data available");
         return;
       }
 
-      // 5. Extract city and state
       const postOffice = data[0]?.PostOffice?.[0];
       if (postOffice) {
         setCity(postOffice.District || postOffice.Name);
@@ -69,59 +55,54 @@ export function AddAddress() {
   };
 
   const saveAddress = async () => {
-  if (!validateForm()) {
-    toast.error("Please fill in all required fields");
-    return;
-  }
+    if (!validateForm()) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
 
-  try {
-    setIsLoading(true);
-    
-    const newAddress = {
-      houseNo,
-      street,
-      locality,
-      pincode,
-      city,
-      state,
-      createdAt: new Date().toISOString() // Optional: add timestamp
-    };
+    try {
+      setIsLoading(true);
+      const newAddress = {
+        houseNo,
+        street,
+        locality,
+        pincode,
+        city,
+        state,
+        createdAt: new Date().toISOString() // Optional: add timestamp
+      };
 
-    // 1. Get current user doc
-    const userDocRef = doc(db, "users", currentUser.uid);
-    const userSnap = await getDoc(userDocRef);
+      const userDocRef = doc(db, "users", currentUser .uid);
+      const userSnap = await getDoc(userDocRef);
+      const currentAddresses = userSnap.exists() ? userSnap.data().addresses || [] : [];
 
-    // 2. Prepare updated addresses array
-    const currentAddresses = userSnap.exists() 
-      ? userSnap.data().addresses || []
-      : [];
+      await updateDoc(userDocRef, {
+        addresses: [...currentAddresses, newAddress]
+      });
 
-    // 3. Update Firestore (using arrayUnion to append new address)
-    await updateDoc(userDocRef, {
-      addresses: [...currentAddresses, newAddress]
-    });
+      // Call the onAdd function to update the addresses in the parent component
+      onAdd(newAddress); // Pass the new address to the parent
 
-    toast.success("Address saved successfully!");
-    
-    // Reset form
-    setHouseNo("");
-    setStreet("");
-    setLocality("");
-    setPincode("");
-    setCity("");
-    setState("");
-    
-    // Close modal
-    document.getElementById("add_address").close();
-    
-  } catch (error) {
-    console.error("Error saving address:", error);
-    toast.error("Failed to save address");
-  } finally {
-    setIsLoading(false);
-  }
-};
-
+      toast.success("Address saved successfully!");
+      
+      // Reset form
+      setHouseNo("");
+      setStreet("");
+      setLocality("");
+      setPincode("");
+      setCity("");
+      setState("");
+      
+      // Close modal
+      document.getElementById("add_address").close();
+      
+    } catch (error) {
+      console.error("Error saving address:", error);
+      toast.error("Failed to save address");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <>
@@ -177,7 +158,9 @@ export function AddAddress() {
             />
           </div>
           <div className="modal-action">
-            <button className="btn btn-success" onClick={saveAddress} disabled={isLoading}>{!isLoading?"Add":(<Loader className="animate-spin" size={18}/>)}</button>
+            <button className="btn btn-success" onClick={saveAddress} disabled={isLoading}>
+              {!isLoading ? "Add" : <Loader className="animate-spin" size={18} />}
+            </button>
             <form method="dialog">
               <button className="btn">Close</button>
             </form>

@@ -1,6 +1,6 @@
 import { MapPin, Edit, Trash2 } from "lucide-react";
 
-export function AddressCard({ houseNo, street, locality, pincode, city, state }) {
+export function AddressCard({ houseNo, street, locality, pincode, city, state, onDelete}) {
   return (
     <div className="card bg-base-100 border border-base-200 shadow-sm hover:shadow-md transition-shadow">
       <div className="card-body p-4 md:p-6">
@@ -20,10 +20,7 @@ export function AddressCard({ houseNo, street, locality, pincode, city, state })
           </div>
 
           <div className="flex gap-1">
-            <button className="btn btn-ghost btn-xs p-1">
-              <Edit size={16} className="text-base-content/70" />
-            </button>
-            <button className="btn btn-ghost btn-xs p-1">
+            <button className="btn btn-ghost btn-xs p-1" onClick={onDelete}>
               <Trash2 size={16} className="text-error" />
             </button>
           </div>

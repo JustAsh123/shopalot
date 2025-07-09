@@ -1,3 +1,4 @@
+// In ProductCard.jsx
 import { useCart } from "../context/useCart";
 import { useAuth } from "../context/useAuth";
 import { Loader } from "lucide-react";
@@ -9,16 +10,17 @@ function ProductCard({ prodId, id, imageUrl, name, price, desc, category }) {
   const { userData } = useAuth();
   const [qty, setQty] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { categories, loading } = useCategory(); // Get categories from the hook
-  const [categoryName, setCategoryName] = useState("");
+  // Get allCategoriesFlat from the hook
+  const { allCategoriesFlat, loading: categoriesLoading } = useCategory();
+  const [categoryName, setCategoryName] = useState("Loading Category...");
 
   const { addToCart, removeFromCart, cartItems, updating } = userData ? useCart(userData.uid) : {};
 
   useEffect(() => {
     if (userData) {
-      const item = cartItems.find(item => 
-        item.prodId === prodId || 
-        item.id === prodId || 
+      const item = cartItems.find(item =>
+        item.prodId === prodId ||
+        item.id === prodId ||
         item.id === id
       );
       setQty(item ? item.qty : 0);
@@ -27,11 +29,14 @@ function ProductCard({ prodId, id, imageUrl, name, price, desc, category }) {
 
   // Find the category name based on the category ID passed as a prop
   useEffect(() => {
-    if (categories.length > 0) {
-      const foundCategory = categories.find(cat => cat.id === category);
+    // Use allCategoriesFlat for lookup
+    if (!categoriesLoading && allCategoriesFlat.length > 0) {
+      const foundCategory = allCategoriesFlat.find(cat => cat.id === category);
       setCategoryName(foundCategory ? foundCategory.name : "Unknown Category");
+    } else if (categoriesLoading) {
+      setCategoryName("Loading Category...");
     }
-  }, [categories, category]);
+  }, [allCategoriesFlat, category, categoriesLoading]); // Add allCategoriesFlat to dependencies
 
   const handleAddToCart = () => {
     if (!updating && userData) {
@@ -84,8 +89,8 @@ function ProductCard({ prodId, id, imageUrl, name, price, desc, category }) {
           <img src={imageUrl} alt={name} className="h-70" />
         </figure>
         <div className="card-body">
-          <h2 
-            onClick={() => setIsModalOpen(true)} 
+          <h2
+            onClick={() => setIsModalOpen(true)}
             className="card-title"
           >
             {name}

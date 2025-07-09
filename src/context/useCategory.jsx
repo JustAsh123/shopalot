@@ -3,7 +3,8 @@ import { collection, getDocs, addDoc, doc, updateDoc, arrayUnion } from 'firebas
 import { db } from '../firebase/firebase';
 
 export function useCategory() {
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState([]); // This will be the structured tree
+  const [allCategoriesFlat, setAllCategoriesFlat] = useState([]); // This will be a flat list for easy lookup
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -17,7 +18,13 @@ export function useCategory() {
         id: doc.id,
         ...doc.data()
       }));
-      setCategories(categoriesData);
+
+      // Set the flat list directly from fetched data
+      setAllCategoriesFlat(categoriesData);
+
+      // Structure categories into a tree format for other uses (if needed)
+      const structured = structureCategories(categoriesData);
+      setCategories(structured); // Update the structured state
     } catch (err) {
       setError(err.message);
     } finally {
@@ -25,20 +32,49 @@ export function useCategory() {
     }
   };
 
+  // Structure categories into a tree format (remains the same)
+  const structureCategories = (categoriesToStructure) => {
+    const categoryMap = {};
+    const structuredResult = [];
+
+    // Initialize map with all categories
+    categoriesToStructure.forEach(category => {
+      categoryMap[category.id] = { ...category, subcategories: [] };
+    });
+
+    // Build the tree
+    categoriesToStructure.forEach(category => {
+      if (category.parentId && categoryMap[category.parentId]) { // Ensure parent exists in map
+        categoryMap[category.parentId].subcategories.push(categoryMap[category.id]);
+      } else {
+        // Only push top-level categories (those without a parentId or with an invalid parentId)
+        // to the structuredResult array.
+        // This implicitly handles cases where a parentId might point to a non-existent category
+        // by making the child a top-level category in the structured view.
+        if (!category.parentId) {
+            structuredResult.push(categoryMap[category.id]);
+        }
+      }
+    });
+
+    return structuredResult;
+  };
+
   // Fetch categories on component mount
   useEffect(() => {
     fetchCategories();
   }, []);
 
-  // Log categories whenever they change
+  // Log categories whenever they change (for debugging, optional)
   useEffect(() => {
-    console.log(categories);
-  }, [categories]);
+    console.log("Structured Categories:", categories);
+    console.log("Flat Categories for Lookup:", allCategoriesFlat);
+  }, [categories, allCategoriesFlat]);
 
   // Add a new category
   const addCategory = async (name, parentId = null) => {
     setLoading(true);
-    setError(null); // Reset error state before adding
+    setError(null);
     try {
       const slug = name.toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
@@ -48,6 +84,7 @@ export function useCategory() {
       if (parentId) newCategory.parentId = parentId;
 
       const docRef = await addDoc(collection(db, 'categories'), newCategory);
+      const newCategoryData = { id: docRef.id, ...newCategory };
 
       // Update parent if this is a subcategory
       if (parentId) {
@@ -56,17 +93,19 @@ export function useCategory() {
         });
       }
 
-      // Update local state without re-fetching
-      setCategories(prev => [...prev, { id: docRef.id, ...newCategory }]);
-      
+      // Update local state by adding to flat list and then re-structuring
+      setAllCategoriesFlat(prev => [...prev, newCategoryData]);
+      setCategories(prev => structureCategories([...allCategoriesFlat, newCategoryData])); // Important: use the updated flat list here
+
       return docRef.id;
     } catch (err) {
       setError(err.message);
       return null;
     } finally {
-      setLoading(false); // Set loading to false here
+      setLoading(false);
     }
   };
 
-  return { categories, loading, error, addCategory, fetchCategories };
+  // Return both structured categories and the flat list
+  return { categories, allCategoriesFlat, loading, error, addCategory, fetchCategories };
 }

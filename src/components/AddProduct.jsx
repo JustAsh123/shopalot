@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { db } from "../firebase/firebase";
 import { useNavigate } from "react-router";
 import toast from "react-hot-toast";
-import { getDocs } from "firebase/firestore";
 import { useCategory } from "../context/useCategory";
 
 export default function AddProduct() {
@@ -11,10 +10,11 @@ export default function AddProduct() {
   const [desc, setDesc] = useState("");
   const [price, setPrice] = useState(0);
   const [imageFile, setImageFile] = useState(null);
-  const {categories} = useCategory()
+  const { categories } = useCategory();
   const [stock, setStock] = useState(0);
   const navigate = useNavigate();
   const [category, setCategory] = useState("");
+  const [subcategory, setSubcategory] = useState("");
 
   const handleImageUpload = async (file) => {
     const data = new FormData();
@@ -45,7 +45,8 @@ export default function AddProduct() {
         desc,
         price,
         imageUrl,
-        category,
+        categoryId: category,
+        subcategoryId: subcategory,
         stock,
       });
       toast.success("Successfully added the product.");
@@ -57,7 +58,6 @@ export default function AddProduct() {
 
   return (
     <>
-      {/* You can open the modal using document.getElementById('ID').showModal() method */}
       <button
         className="btn outline-success outline-solid"
         onClick={() => document.getElementById("my_modal_3").showModal()}
@@ -67,7 +67,6 @@ export default function AddProduct() {
       <dialog id="my_modal_3" className="modal">
         <div className="modal-box">
           <form method="dialog">
-            {/* if there is a button in form, it will close the modal */}
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
               ✕
             </button>
@@ -103,9 +102,17 @@ export default function AddProduct() {
               placeholder="Image"
               className="text-xl outline-white outline-solid"
             />
-            <select defaultValue="Pick a Category" className="select" onClick={(e)=>setCategory(e.target.value)}>
+            <select defaultValue="Pick a Category" className="select" onChange={(e) => setCategory(e.target.value)}>
               <option disabled={true}>Pick a Category</option>
-              {categories.map((cat)=><option key={cat.id} value={cat.id}>{cat.name}</option>)}
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
+              ))}
+            </select>
+            <select defaultValue="Pick a Subcategory" className="select" onChange={(e) => setSubcategory(e.target.value)}>
+              <option disabled={true}>Pick a Subcategory</option>
+              {categories.find(cat => cat.id === category)?.subcategories.map((subcat) => (
+                <option key={subcat.id} value={subcat.id}>{subcat.name}</option>
+              ))}
             </select>
             <input
               type="number"

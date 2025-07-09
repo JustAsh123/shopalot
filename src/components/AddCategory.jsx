@@ -4,42 +4,28 @@ import { db } from "../firebase/firebase";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
 
-export default function AddCategory(){
-    const [n, setN] = useState("")
-    const [loading, setLoading] = useState(false)
-    const [file, setFile] = useState(null)
-    const navigate = useNavigate();
+export default function AddCategory() {
+  const [n, setN] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-    const handleImageUpload = async (file) => {
-      const data = new FormData();
-      data.append("file",file);
-      data.append("upload_preset","product_uploads")
+  const addCategory = async (name) => {
+    setLoading(true);
+    const slug = name
+      .toLowerCase()
+      .replace(/&/g, "and") // Replace & with 'and'
+      .replace(/\s+/g, "-") // Replace spaces with hyphens
+      .replace(/[^a-z0-9-]/g, "") // Remove all non-alphanumeric and non-hyphen characters
+      .replace(/-+/g, "-") // Collapse multiple hyphens
+      .replace(/^-+|-+$/g, ""); // Trim leading/trailing hyphens
 
-      const res = await fetch(
-        "https://api.cloudinary.com/v1_1/dxuf6i2s5/image/upload",
-        {
-          method:"POST",
-          body:data,
-        }
-      )
-      const json = await res.json();
-      return json.secure_url;
-    }
-    
-    const addCategory = async (name) =>{
-        setLoading(true)
-        let image_url = "";
-        if(file){
-          image_url = await handleImageUpload(file);
-        }
-        const slug = name.toLowerCase().replace(/\s+/g,'-');
-        await addDoc(collection(db,'categories'),{name,slug,image_url})
-        setLoading(false)
-        toast.success("Category Added successfully.")
-        navigate("/")
-    };
+    await addDoc(collection(db, "categories"), { name, slug });
+    setLoading(false);
+    toast.success("Category Added successfully.");
+    navigate("/");
+  };
 
-    return (
+  return (
     <>
       {/* You can open the modal using document.getElementById('ID').showModal() method */}
       <button
@@ -66,13 +52,13 @@ export default function AddCategory(){
               placeholder="Name"
               className="text-xl outline-white outline-solid"
             />
-            <input
-              type="file"
-              onChange={(e) => setFile(e.target.files[0])}
-              placeholder="Image"
-              className="text-xl outline-white outline-solid"
-            />
-            <button onClick={()=>addCategory(n)} className="btn bg-pink-800 text-white text-2xl" disabled={loading}>{loading?"Adding...":"Add"}</button>
+            <button
+              onClick={() => addCategory(n)}
+              className="btn bg-pink-800 text-white text-2xl"
+              disabled={loading}
+            >
+              {loading ? "Adding..." : "Add"}
+            </button>
           </div>
         </div>
       </dialog>

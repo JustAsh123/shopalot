@@ -104,7 +104,7 @@ function ProductCard({ prodId, id, imageUrl, name, price, desc, category }) {
         <dialog className="modal" open>
           <div className="modal-box">
             <figure className="bg-white flex justify-center">
-              <img src={imageUrl} alt={name} className="h-80" />
+              <img src={imageUrl} alt={name} className="h-80 object-contain" />
             </figure>
             <h3 className="font-bold text-xl mt-3">{name}</h3>
             <p className="py-4">{desc}</p>

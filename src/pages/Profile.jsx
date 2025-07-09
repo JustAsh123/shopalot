@@ -84,7 +84,7 @@ export function Profile() {
                   </button>
                 </>
               ) : (
-                <Loader className="animate-spin" size={18} />
+                <span className="loading loading-spinner loading-lg"></span>
               )}
             </>
           ) : (

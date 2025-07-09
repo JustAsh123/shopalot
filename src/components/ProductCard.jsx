@@ -10,33 +10,32 @@ function ProductCard({ prodId, id, imageUrl, name, price, desc, category }) {
   const { userData } = useAuth();
   const [qty, setQty] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // Get allCategoriesFlat from the hook
   const { allCategoriesFlat, loading: categoriesLoading } = useCategory();
   const [categoryName, setCategoryName] = useState("Loading Category...");
 
-  const { addToCart, removeFromCart, cartItems, updating } = userData ? useCart(userData.uid) : {};
+  const { addToCart, removeFromCart, cartItems, updating } = userData
+    ? useCart(userData.uid)
+    : {};
 
   useEffect(() => {
     if (userData) {
-      const item = cartItems.find(item =>
-        item.prodId === prodId ||
-        item.id === prodId ||
-        item.id === id
+      const item = cartItems.find(
+        (item) => item.prodId === prodId || item.id === prodId || item.id === id
       );
       setQty(item ? item.qty : 0);
     }
   }, [cartItems, userData, id, prodId]);
 
-  // Find the category name based on the category ID passed as a prop
   useEffect(() => {
-    // Use allCategoriesFlat for lookup
     if (!categoriesLoading && allCategoriesFlat.length > 0) {
-      const foundCategory = allCategoriesFlat.find(cat => cat.id === category);
+      const foundCategory = allCategoriesFlat.find(
+        (cat) => cat.id === category
+      );
       setCategoryName(foundCategory ? foundCategory.name : "Unknown Category");
     } else if (categoriesLoading) {
       setCategoryName("Loading Category...");
     }
-  }, [allCategoriesFlat, category, categoriesLoading]); // Add allCategoriesFlat to dependencies
+  }, [allCategoriesFlat, category, categoriesLoading]);
 
   const handleAddToCart = () => {
     if (!updating && userData) {
@@ -89,14 +88,14 @@ function ProductCard({ prodId, id, imageUrl, name, price, desc, category }) {
           <img src={imageUrl} alt={name} className="h-70" />
         </figure>
         <div className="card-body">
-          <h2
-            onClick={() => setIsModalOpen(true)}
-            className="card-title"
-          >
+          <h2 onClick={() => setIsModalOpen(true)} className="card-title">
             {name}
-            <div className="badge badge-outline badge-secondary">{categoryName}</div>
+            {/* Added Tailwind CSS classes for truncation */}
+            <div className="outline outline-success text-sm rounded-lg text-gray-500 p-0.5">
+              {categoryName}
+            </div>
           </h2>
-          <div className="card-actions justify-between">
+          <div className="card-actions justify-between items-center">
             <p className="flex flex-row mt-3 text-xl text-yellow-500">
               ₹{price}
             </p>
@@ -104,25 +103,6 @@ function ProductCard({ prodId, id, imageUrl, name, price, desc, category }) {
           </div>
         </div>
       </div>
-
-      {isModalOpen && (
-        <dialog className="modal" open>
-          <div className="modal-box">
-            <figure className="bg-white flex justify-center">
-              <img src={imageUrl} alt={name} className="h-80 object-contain" />
-            </figure>
-            <h3 className="font-bold text-xl mt-3">{name}</h3>
-            <p className="py-4">{desc}</p>
-            <div className="flex justify-between items-center">
-              <p className="text-yellow-400 text-xl">₹{price}</p>
-              {renderCartButtons()}
-            </div>
-          </div>
-          <form method="dialog" className="modal-backdrop">
-            <button onClick={() => setIsModalOpen(false)}>close</button>
-          </form>
-        </dialog>
-      )}
     </>
   );
 }

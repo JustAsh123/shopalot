@@ -2,7 +2,7 @@ import { MapPin, Edit, Trash2 } from "lucide-react";
 
 export function AddressCard({ houseNo, street, locality, pincode, city, state, onDelete}) {
   return (
-    <div className="card bg-base-100 border border-base-200 shadow-sm hover:shadow-md transition-shadow">
+    <div className="card bg-base-200 border border-base-300 max-w-lg shadow-md hover:shadow-lg transition-shadow">
       <div className="card-body p-4 md:p-6">
         <div className="flex items-start gap-4">
           <div className="bg-primary/10 p-2 rounded-full">

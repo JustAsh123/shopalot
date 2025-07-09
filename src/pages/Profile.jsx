@@ -10,21 +10,22 @@ import { AddressCard } from "../components/AddressCard"; // Import AddressCard
 import { useAddresses } from "../context/useAddress"; // Import the useAddresses hook
 
 export function Profile() {
-  const { currentUser , userData, username, setUserData } = useAuth();
+  const { currentUser, userData, username, setUserData } = useAuth();
   const [isEditingPhone, setIsEditingPhone] = useState(false);
   const [newPhone, setNewPhone] = useState("");
   const [phoneValid, setPhoneValid] = useState(false);
   const [updatingPhone, setUpdatingPhone] = useState(false);
   const navigate = useNavigate();
-  
+
   // Use the custom hook to manage addresses
-  const { addresses, loading, error, removeAddress , setAddresses } = useAddresses();
+  const { addresses, loading, error, removeAddress, setAddresses } =
+    useAddresses();
 
   useEffect(() => {
     setPhoneValid(newPhone.length === 10);
   }, [newPhone]);
 
-  if (!currentUser ) navigate("/login");
+  if (!currentUser) navigate("/login");
 
   const handleEditPhone = async () => {
     if (!phoneValid) return toast.error("Enter a valid Phone Number.");
@@ -126,7 +127,8 @@ export function Profile() {
               ))
             )}
             <div className="flex flex-row gap-4">
-              <AddAddress onAdd={handleAddAddress} /> {/* Pass addAddress handler */}
+              <AddAddress onAdd={handleAddAddress} />{" "}
+              {/* Pass addAddress handler */}
             </div>
           </div>
         </div>

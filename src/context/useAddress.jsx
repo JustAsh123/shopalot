@@ -41,34 +41,36 @@ export function useAddresses() {
   }, [currentUser ?.uid]);
 
   // Remove address
-  const removeAddress = async (addressId) => {
+ const removeAddress = async (addressId) => {
     if (!currentUser ?.uid) throw new Error("Not authenticated");
 
     setLoading(true);
     try {
-      const userRef = doc(db, 'users', currentUser .uid);
-      const userSnap = await getDoc(userRef);
-      
-      if (userSnap.exists()) {
-        const userData = userSnap.data();
-        const addressToRemove = userData.addresses?.find(a => a.id === addressId);
+        const userRef = doc(db, 'users', currentUser .uid);
+        const userSnap = await getDoc(userRef);
         
-        if (addressToRemove) {
-          await updateDoc(userRef, {
-            addresses: arrayRemove(addressToRemove)
-          });
+        if (userSnap.exists()) {
+            const userData = userSnap.data();
+            const addressToRemove = userData.addresses?.find(a => a.id === addressId);
+            
+            if (addressToRemove) {
+                await updateDoc(userRef, {
+                    addresses: arrayRemove(addressToRemove)
+                });
 
-          // Update local state
-          setAddresses(prev => prev.filter(a => a.createdAt !== addressId));
+                // Update local state immediately after deletion
+                setAddresses(prev => prev.filter(a => a.id !== addressId));
+            }
         }
-      }
     } catch (err) {
-      setError(err);
-      console.error("Error removing address:", err);
+        setError(err);
+        console.error("Error removing address:", err);
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  };
+};
+
+
 
   // Set default address
   const setDefaultAddress = async (addressId) => {

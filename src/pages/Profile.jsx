@@ -105,7 +105,7 @@ export function Profile() {
         </p>
         <div className="text-2xl flex flex-col gap-2">
           <p>My Addresses:</p>
-          <div className="lg:ml-8 md:ml-5 sm:ml-2 mt-4 grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-2">
+          <div className="lg:mx-8 md:mx-5 sm:mx-2 mt-4 grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-2">
             {loading ? (
               <p>Loading addresses...</p>
             ) : error ? (
@@ -127,7 +127,7 @@ export function Profile() {
               ))
             )}
           </div>
-          <div className="flex flex-row gap-4  md:ml-5 sm:ml-2 mt-4">
+          <div className="flex flex-row gap-4 lg:ml-8 md:ml-5 sm:ml-2 mt-4">
               <AddAddress onAdd={handleAddAddress} />{" "}
               {/* Pass addAddress handler */}
             </div>

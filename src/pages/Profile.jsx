@@ -2,7 +2,7 @@ import { useAuth } from "../context/useAuth";
 import { useNavigate } from "react-router";
 import { Pencil, X, Check, Loader } from "lucide-react";
 import { useEffect, useState } from "react";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc, getDoc } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import toast from "react-hot-toast";
 import { AddAddress } from "../components/AddAddress";
@@ -14,6 +14,9 @@ export function Profile() {
   const [phoneValid, setPhoneValid] = useState(false);
   const [updatingPhone, setUpdatingPhone] = useState(false);
   const navigate = useNavigate();
+  const [addresses, setAddresses] = useState([]);
+  
+  useEffect(()=>{},[addresses])
 
   useEffect(() => {
     console.log(newPhone);
@@ -95,7 +98,7 @@ export function Profile() {
         <div className="text-2xl flex flex-col gap-2">
           <p>My Addresses : </p>
           <div className="ml-8 flex flex-col gap-2">
-            {userData.address.length === 0 ? (
+            {userData.addresses.length === 0 ? (
               <p className="text-red-700">You don't have any addresses.</p>
             ) : (
               "Wait"

@@ -27,7 +27,7 @@ const Cart = () => {
   return (
     <div className="container mx-auto p-4 md:p-8">
       <h1 className="text-3xl font-bold mb-8">Your Shopping Cart</h1>
-      
+
       {updating && (
         <div className="alert alert-info mb-6">
           <span>Updating your cart...</span>

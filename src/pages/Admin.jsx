@@ -1,6 +1,7 @@
 import AddProduct from "../components/AddProduct";
 import AddCategory from "../components/AddCategory";
 import { useAuth } from "../context/useAuth";
+import CategoryManager from "../components/CategoryManager";
 
 export default function Admin(){
     const {currentUser, userData} = useAuth();
@@ -9,8 +10,11 @@ export default function Admin(){
 
     return (
         <>
-            <AddProduct></AddProduct>
+            <CategoryManager />
+            <div className="flex flex-row justify-center items-center gap-4">
+                <AddProduct></AddProduct>
             <AddCategory></AddCategory>
+            </div>
         </>
     )
 }

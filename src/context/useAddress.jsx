@@ -40,32 +40,6 @@ export function useAddresses() {
     fetchAddresses();
   }, [currentUser ?.uid]);
 
-  // Add new address
-  const addAddress = async (newAddress) => {
-    if (!currentUser ?.uid) throw new Error("Not authenticated");
-
-    setLoading(true);
-    try {
-      const userRef = doc(db, 'users', currentUser .uid);
-      const addressWithId = {
-        id: Date.now().toString(), // Generate a unique ID
-        ...newAddress
-      };
-
-      await updateDoc(userRef, {
-        addresses: arrayUnion(addressWithId)
-      });
-
-      // Update local state
-      setAddresses(prev => [...prev, addressWithId]);
-    } catch (err) {
-      setError(err);
-      console.error("Error adding address:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   // Remove address
   const removeAddress = async (addressId) => {
     if (!currentUser ?.uid) throw new Error("Not authenticated");
@@ -85,7 +59,7 @@ export function useAddresses() {
           });
 
           // Update local state
-          setAddresses(prev => prev.filter(a => a.id !== addressId));
+          setAddresses(prev => prev.filter(a => a.createdAt !== addressId));
         }
       }
     } catch (err) {
@@ -127,7 +101,6 @@ export function useAddresses() {
     loading,
     setAddresses,
     error,
-    addAddress,
     removeAddress,
     setDefaultAddress,
     retry: () => setError(null) // Simple error recovery

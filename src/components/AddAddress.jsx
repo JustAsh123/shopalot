@@ -4,6 +4,7 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import { useAuth } from "../context/useAuth";
 import { Loader } from "lucide-react";
+import { useAddresses } from "../context/useAddress";
 
 export function AddAddress({ onAdd }) { // Accept onAdd prop
   const [houseNo, setHouseNo] = useState("");
@@ -63,6 +64,7 @@ export function AddAddress({ onAdd }) { // Accept onAdd prop
     try {
       setIsLoading(true);
       const newAddress = {
+        id:Date.now().toString(),
         houseNo,
         street,
         locality,
@@ -120,18 +122,21 @@ export function AddAddress({ onAdd }) { // Accept onAdd prop
               type="text"
               placeholder="House/Flat/Building Number"
               className="input w-full"
+              value={houseNo}
               onChange={(e) => setHouseNo(e.target.value)}
             />
             <input
               type="text"
               placeholder="Street Address"
               className="input w-full"
+              value={street}
               onChange={(e) => setStreet(e.target.value)}
             />
             <input
               type="text"
               placeholder="Locality/Area Name"
               className="input w-full"
+              value={locality}
               onChange={(e) => setLocality(e.target.value)}
             />
             <div className="flex flex-row gap-2">
@@ -139,6 +144,7 @@ export function AddAddress({ onAdd }) { // Accept onAdd prop
                 type="text"
                 placeholder="Postal Code"
                 className="input w-full"
+                value={pincode}
                 onChange={(e) => setPincode(e.target.value)}
               />
               <input

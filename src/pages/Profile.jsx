@@ -130,8 +130,7 @@ export function Profile() {
             )}
           </div>
           <div className="flex flex-row gap-4 lg:ml-8 md:ml-5 sm:ml-2 mt-4">
-              <AddAddress onAdd={handleAddAddress} />{" "}
-              {/* Pass addAddress handler */}
+              <AddAddress onAdd={handleAddAddress} />
             </div>
         </div>
       </div>

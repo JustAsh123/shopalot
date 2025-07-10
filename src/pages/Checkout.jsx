@@ -73,6 +73,7 @@ export function Checkout() {
     }
     if (!paymentMethod) {
       // Replaced alert with a toast for consistent UI feedback
+      console.log(paymentMethod)
       toast.error("Please select a payment method.");
       return;
     }
@@ -200,7 +201,7 @@ export function Checkout() {
             ))}
           </div>
           <div className="flex flex-row-reverse">
-            <button className="btn btn-outline text-white btn-warning text-xl">Place Order</button>
+            <button className="btn btn-outline text-white btn-warning text-xl" onClick={handlePlaceOrder}>Place Order</button>
           </div>
         </div>
       </div>

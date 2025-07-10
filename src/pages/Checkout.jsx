@@ -149,7 +149,6 @@ export function Checkout() {
             ))
           )}
         </div>
-        // Payment Options Section (Enhanced)
         <div className="space-y-6">
           <p className="text-2xl text-primary flex items-center gap-2">
             <CreditCard size={24} />
@@ -200,7 +199,8 @@ export function Checkout() {
               </label>
             ))}
           </div>
-          <div className="flex flex-row-reverse">
+          <div className="flex flex-row justify-end items-center gap-4">
+            <h2 className="text-xl font-bold">₹{totalPrice.toFixed(2)}</h2>
             <button className="btn btn-outline text-white btn-warning text-xl" onClick={handlePlaceOrder}>Place Order</button>
           </div>
         </div>

@@ -3,12 +3,14 @@ import { useCart } from '../context/useCart'; // Adjust the path as necessary
 import { useProducts } from '../context/useProducts'; // Adjust the path as necessary
 import { useAuth } from '../context/useAuth'; // Adjust the path as necessary
 import { ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router';
 
 const Cart = ({isOnCheckout}) => {
   const { currentUser  } = useAuth();
   const { cartItems, addToCart, removeFromCart, updating } = useCart(currentUser ?.uid);
   const { prods, loading, error } = useProducts();
 
+  const navigate = useNavigate();
   // Create a mapping of product IDs to product details
   const productMap = {};
   prods.forEach(product => {
@@ -37,7 +39,7 @@ const Cart = ({isOnCheckout}) => {
       {cartItems.length === 0 ? (
         <div className="text-center py-12">
           <div className="text-2xl mb-4">Your cart is empty</div>
-          <button className="btn btn-primary">Continue Shopping</button>
+          <button className="btn btn-primary" onClick={()=>{navigate("/")}}>Continue Shopping</button>
         </div>
       ) : (
         <div className="overflow-x-auto">

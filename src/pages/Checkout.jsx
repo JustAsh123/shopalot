@@ -8,10 +8,13 @@ import { useCart } from "../context/useCart"; // Import useCart
 import { useProducts } from "../context/useProducts"; // Import useProducts
 import { useAuth } from "../context/useAuth"; // Import useAuth for currentUser and authLoading
 import { Wallet, Landmark, HandCoins, Bitcoin } from "lucide-react";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router";
 
 export function Checkout() {
   // Get states from useAuth, useAddresses, useProducts, and useCart
-  const { currentUser, loading: authLoading } = useAuth();
+  const { currentUser, loading: authLoading, userData } = useAuth();
+  const navigate = useNavigate();
   const {
     addresses,
     loading: addressesLoading,
@@ -39,10 +42,12 @@ export function Checkout() {
   });
 
   // Debugging: Log cart items and products to see what's available
-  useEffect(() => {
-    console.log("Current Cart Items:", cartItems);
-    console.log("Available Products (for lookup):", prods);
-  }, [cartItems, prods]);
+  useEffect(()=>{
+    if(userData.phoneNumber==="" || userData.addresses.length===0){
+      toast.error("Please enter your Phone No. / Address")
+      navigate("/profile")
+    }
+  },[])
 
   const totalPrice = cartItems.reduce((total, item) => {
     const product = productMap[item.id];

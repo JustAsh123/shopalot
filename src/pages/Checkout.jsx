@@ -9,11 +9,13 @@ import { useProducts } from "../context/useProducts"; // Import useProducts
 import { useAuth } from "../context/useAuth"; // Import useAuth for currentUser and authLoading
 import { Wallet, Landmark, HandCoins, Bitcoin } from "lucide-react";
 import toast from "react-hot-toast";
+import { useOrders } from "../context/useOrders";
 import { useNavigate } from "react-router";
 
 export function Checkout() {
   // Get states from useAuth, useAddresses, useProducts, and useCart
   const { currentUser, loading: authLoading, userData } = useAuth();
+  const {placeOrder, placingOrder, OrderError} = useOrders()
   const navigate = useNavigate();
   const {
     addresses,
@@ -61,8 +63,8 @@ export function Checkout() {
   }, 0);
 
   const handleDeliveryAddress = (addId) => {
-    setDeliverTo(addId);
-    console.log("Selected delivery address ID:", addId);
+    setDeliverTo(addId)
+    console.log("Selected delivery address ID:", );
   };
 
   const handlePlaceOrder = () => {
@@ -78,6 +80,7 @@ export function Checkout() {
       return;
     }
     // Logic to place the order
+    placeOrder(userData.uid, cartItems, totalPrice.toFixed(2), deliverTo, paymentMethod, prods, addresses )
     console.log(
       "Order placed with delivery to:",
       deliverTo,

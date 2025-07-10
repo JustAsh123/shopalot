@@ -4,7 +4,7 @@ import { useProducts } from '../context/useProducts'; // Adjust the path as nece
 import { useAuth } from '../context/useAuth'; // Adjust the path as necessary
 import { ArrowRight } from 'lucide-react';
 
-const Cart = () => {
+const Cart = ({isOnCheckout}) => {
   const { currentUser  } = useAuth();
   const { cartItems, addToCart, removeFromCart, updating } = useCart(currentUser ?.uid);
   const { prods, loading, error } = useProducts();
@@ -26,7 +26,7 @@ const Cart = () => {
 
   return (
     <div className="container mx-auto p-4 md:p-8">
-      <h1 className="text-3xl font-bold mb-8">Your Shopping Cart</h1>
+      {!isOnCheckout && <h1 className="text-3xl font-bold mb-8">Your Shopping Cart</h1>}
 
       {updating && (
         <div className="alert alert-info mb-6">
@@ -47,7 +47,7 @@ const Cart = () => {
                 <th>Product</th>
                 <th>Quantity</th>
                 <th>Price</th>
-                <th>Actions</th>
+                {!isOnCheckout && <th>Actions</th>}
               </tr>
             </thead>
             <tbody>
@@ -63,7 +63,7 @@ const Cart = () => {
                     </td>
                     <td>{item.qty}</td>
                     <td>₹{(product?.price * item.qty).toFixed(2)}</td>
-                    <td>
+                    {!isOnCheckout && <td>
                       <button
                         className="btn btn-success mr-2"
                         onClick={() => addToCart(currentUser ?.uid, item.id)}
@@ -76,16 +76,16 @@ const Cart = () => {
                       >
                         -
                       </button>
-                    </td>
+                    </td>}
                   </tr>
                 );
               })}
             </tbody>
           </table>
-          <div className="mt-4 text-right flex flex-row justify-end items-center gap-4">
+          {!isOnCheckout && <div className="mt-4 text-right flex flex-row justify-end items-center gap-4">
             <h2 className="text-xl font-bold">Total: ₹{totalPrice.toFixed(2)}</h2>
-            <a className='btn btn-outline btn-secondary'>Checkout<ArrowRight size={24}/></a>
-          </div>
+            <a className='btn btn-outline btn-secondary' href='/checkout'>Checkout<ArrowRight size={24}/></a>
+          </div>}
         </div>
       )}
     </div>

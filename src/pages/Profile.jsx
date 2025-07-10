@@ -122,7 +122,8 @@ export function Profile() {
                   pincode={address.pincode}
                   city={address.city}
                   state={address.state}
-                  onDelete={() => removeAddress(address.id)} // Pass delete handler
+                  onDelete={() => removeAddress(address.id)} 
+                  showDelete = {true}
                 />
               ))
             )}

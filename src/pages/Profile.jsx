@@ -124,6 +124,7 @@ export function Profile() {
                   state={address.state}
                   onDelete={() => removeAddress(address.id)} 
                   showDelete = {true}
+                  showRadio = {false}
                 />
               ))
             )}

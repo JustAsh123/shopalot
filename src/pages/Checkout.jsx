@@ -2,14 +2,23 @@ import Cart from "./Cart";
 import { MapIcon } from "lucide-react";
 import { useAddresses } from "../context/useAddress";
 import { AddressCard } from "../components/AddressCard";
+import { useState } from "react";
+import { CreditCard } from "lucide-react";
 
 export function Checkout() {
   const { addresses, loading, error } = useAddresses();
 
+  const [deliverTo, setDeliverTo] = useState("");
+
+  const handleDeliveryAddress = (addId) => {
+    setDeliverTo(addId);
+    console.log(addId)
+  }
+
   return (
-    <div className="grid md:grid-cols-2 sm:grid-cols-1">
+    <div className="grid md:grid-cols-2 sm:grid-cols-1" >
       <Cart isOnCheckout={true} />
-      <div className="m-8">
+      <div className="m-8 flex flex-col gap-8">
         <p className="text-2xl text-primary flex flex-row gap-1 items-center">
           <MapIcon size={24} /> Deliver To :{" "}
         </p>
@@ -24,6 +33,8 @@ export function Checkout() {
             addresses.map((address) => (
               <AddressCard
                 key={address.id}
+                showRadio = {true}
+                onRadio = {()=>handleDeliveryAddress(address.id)}
                 houseNo={address.houseNo}
                 street={address.street}
                 locality={address.locality}
@@ -35,6 +46,9 @@ export function Checkout() {
             ))
           )}
         </div>
+        <p className="text-2xl text-primary flex flex-row gap-1 items-center">
+          <CreditCard size={24}/> Payment Options:
+        </p>
       </div>
     </div>
   );

@@ -18,7 +18,7 @@ export const useOrders = () => {
    * @param {Array<object>} allProducts - All available products to get details (name, price, imageUrl).
    * @param {Array<object>} allAddresses - All available addresses to get full address details.
    */
-  const placeOrder = async (userId, cartItems, totalPrice, deliveryAddressId, paymentMethod, allProducts, allAddresses) => {
+  const placeOrder = async (userId, cartItems, totalPrice, deliveryAddressId, paymentMethod, allProducts, allAddresses, clearCart) => {
     setPlacingOrder(true);
     setOrderError(null);
 
@@ -109,6 +109,7 @@ export const useOrders = () => {
       toast.error("Failed to place order. Please try again.");
       return null;
     } finally {
+      clearCart(userId)
       setPlacingOrder(false);
     }
   };

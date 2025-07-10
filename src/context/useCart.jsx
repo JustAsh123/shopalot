@@ -188,6 +188,33 @@ export const useCart = (userId) => {
     }
   };
 
-  // Return cart data, functions, and status flags
-  return { cartItems, addToCart, removeFromCart, updating, loading, error };
+  /**
+   * Clears all items from the user's cart.
+   *
+   * @param {string} currentUserId - The ID of the user whose cart to clear.
+   */
+  const clearCart = async (currentUserId) => {
+    if (!currentUserId) {
+      toast.error("User ID missing. Cannot clear cart.");
+      return;
+    }
+
+    setUpdating(true); // Indicate that an update operation is in progress
+    setError(null); // Clear any previous errors
+    try {
+      const cartRef = doc(db, "carts", currentUserId);
+      await setDoc(cartRef, { cartItems: [] }); // Set cartItems to an empty array in Firestore
+      setCartItems([]); // Optimistically update local state
+      toast.success("Cart cleared successfully!");
+    } catch (err) {
+      console.error("Error clearing cart:", err);
+      setError(err);
+      toast.error("Failed to clear cart.");
+    } finally {
+      setUpdating(false); // Operation complete
+    }
+  };
+
+  // Return cart data, functions, and status flags, including clearCart
+  return { cartItems, addToCart, removeFromCart, clearCart, updating, loading, error };
 };

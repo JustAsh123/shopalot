@@ -27,6 +27,7 @@ export function Checkout() {
     cartItems,
     loading: cartLoading,
     error: cartError,
+    clearCart
   } = useCart(currentUser?.uid);
   const {
     prods,
@@ -80,7 +81,7 @@ export function Checkout() {
       return;
     }
     // Logic to place the order
-    placeOrder(userData.uid, cartItems, totalPrice.toFixed(2), deliverTo, paymentMethod, prods, addresses )
+    placeOrder(userData.uid, cartItems, totalPrice.toFixed(2), deliverTo, paymentMethod, prods, addresses, clearCart )
     console.log(
       "Order placed with delivery to:",
       deliverTo,
@@ -88,7 +89,8 @@ export function Checkout() {
       paymentMethod
     );
     // In a real application, you would send this data to your backend
-    toast.success(`Order placed! Total: $${totalPrice.toFixed(2)}`); // Replaced alert with toast
+    toast.success(`Order placed! Total: $${totalPrice.toFixed(2)}`); // Replaced alert with toast\
+    navigate("/profile")
     // You might want to clear the cart here or navigate to an order confirmation page
   };
 

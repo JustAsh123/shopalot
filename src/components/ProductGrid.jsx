@@ -17,7 +17,7 @@ function ProductGrid({subId}){
     if(loading) return <h1 className="text-3xl text-white">Loading...</h1>
     
     return(
-        <div className="grid lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 place-items-center mt-5">
+        <div className="grid lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 gap-8 place-items-center mt-5">
             {products.map((doc)=>{
                 return(
                     <ProductCard key={doc.id} prodId={doc.id} name={doc.name} desc={doc.desc} price={doc.price} imageUrl={doc.imageUrl} category={doc.subcategoryId} stock={doc.stock}/>

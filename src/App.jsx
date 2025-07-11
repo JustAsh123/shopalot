@@ -8,6 +8,7 @@ import Admin from "./pages/Admin.jsx"
 import Homepage from "./pages/Homepage.jsx"
 import Cart from "./pages/Cart.jsx"
 import { Checkout } from "./pages/Checkout.jsx"
+import { OrderConfirm } from "./pages/OrderConfirm.jsx"
 import { Profile } from "./pages/Profile.jsx"
 function App() {
   const {currentUser, username, userData} = useAuth();
@@ -24,6 +25,7 @@ function App() {
         <Route path="/admin" element={<Admin />}/>
         <Route path="/cart" element={<Cart isOnCheckout={false}/>}/>
         <Route path="/checkout" element={<Checkout/>}/>
+        <Route path="/order-confirm/:orderId" element={<OrderConfirm/>}/>
         <Route path="/profile" element={<Profile></Profile>}></Route>
         <Route path="*" element={<h1>No Page Found</h1>}/>
       </Routes>

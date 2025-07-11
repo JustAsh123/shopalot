@@ -68,7 +68,7 @@ export function Checkout() {
     console.log("Selected delivery address ID:", );
   };
 
-  const handlePlaceOrder = () => {
+  const handlePlaceOrder = async () => {
     if (!deliverTo) {
       // Replaced alert with a toast for consistent UI feedback
       toast.error("Please select a delivery address.");
@@ -81,7 +81,7 @@ export function Checkout() {
       return;
     }
     // Logic to place the order
-    placeOrder(userData.uid, cartItems, totalPrice.toFixed(2), deliverTo, paymentMethod, prods, addresses, clearCart )
+    const oId = await placeOrder(userData.uid, cartItems, totalPrice.toFixed(2), deliverTo, paymentMethod, prods, addresses, clearCart )
     console.log(
       "Order placed with delivery to:",
       deliverTo,
@@ -90,7 +90,8 @@ export function Checkout() {
     );
     // In a real application, you would send this data to your backend
     toast.success(`Order placed! Total: $${totalPrice.toFixed(2)}`); // Replaced alert with toast\
-    navigate("/profile")
+    console.log(oId)
+    navigate(`/order-confirm/${oId}`)
     // You might want to clear the cart here or navigate to an order confirmation page
   };
 

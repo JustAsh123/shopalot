@@ -44,7 +44,10 @@ export const useFetchOrders = (userId) => {
         );
 
         const querySnapshot = await getDocs(ordersQuery);
-        let ordersData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        let ordersData = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
 
         // Sort orders in memory by orderDate (descending)
         // Ensure orderDate exists and is a Firestore Timestamp or comparable value
@@ -54,6 +57,40 @@ export const useFetchOrders = (userId) => {
           return dateB.getTime() - dateA.getTime(); // Descending order
         });
 
+        // Assume ordersData is an array of objects, where each object
+        // has an 'orderDate' property (which is a Firebase Timestamp)
+        // and a 'status' property you want to update.
+
+        ordersData.forEach((order) => {
+          // Renamed 'orders' to 'order' for clarity within the loop
+          const orderDateJs = order.orderDate.toDate(); // Convert Firebase Timestamp to JS Date
+          const today = new Date(); // Get the current date and time
+
+          // Calculate the difference in milliseconds
+          const differenceInMilliseconds =
+            today.getTime() - orderDateJs.getTime(); // today - orderDate
+
+          // Convert milliseconds to hours and days for comparison
+          const millisecondsPerHour = 1000 * 60 * 60;
+          const millisecondsPerDay = millisecondsPerHour * 24;
+
+          const differenceInHours =
+            differenceInMilliseconds / millisecondsPerHour;
+          const differenceInDays =
+            differenceInMilliseconds / millisecondsPerDay;
+
+          if (differenceInDays >= 1) {
+            order.status = "Delivered";
+          } else if (differenceInHours >= 6) {
+            order.status = "Shipped";
+          } else {
+            order.status = "Processing";
+          }
+        });
+
+        // After the loop, ordersData array will have its 'status' properties updated.
+        // If you need to save these changes back to Firestore, you'd then
+        // iterate over ordersData again and update each document.
         setOrders(ordersData);
         console.log("Fetched and sorted orders:", ordersData);
         toast.success("Orders loaded successfully!");

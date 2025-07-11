@@ -1,3 +1,4 @@
+// useProducts (no changes needed here, just ensure your data in Firestore has categoryId)
 import { useEffect, useState } from "react"
 import { db } from "../firebase/firebase"
 import { getDocs, collection } from "firebase/firestore"
@@ -16,7 +17,7 @@ export const useProducts = () => {
                     id:doc.id,
                     ...doc.data()
                 }))
-                console.log(ProductList)
+                // console.log(ProductList) // Can be noisy, uncomment for debugging
                 setProds(ProductList)
             }catch(err){
                 setError(err)

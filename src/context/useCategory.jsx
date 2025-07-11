@@ -3,109 +3,98 @@ import { collection, getDocs, addDoc, doc, updateDoc, arrayUnion } from 'firebas
 import { db } from '../firebase/firebase';
 
 export function useCategory() {
-  const [categories, setCategories] = useState([]); // This will be the structured tree
-  const [allCategoriesFlat, setAllCategoriesFlat] = useState([]); // This will be a flat list for easy lookup
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+    const [categories, setCategories] = useState([]); // This will be the structured tree
+    const [allCategoriesFlat, setAllCategoriesFlat] = useState([]); // This will be a flat list for easy lookup
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-  // Fetch categories from Firestore
-  const fetchCategories = async () => {
-    setLoading(true);
-    setError(null); // Reset error state before fetching
-    try {
-      const querySnapshot = await getDocs(collection(db, 'categories'));
-      const categoriesData = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
+    // Fetch categories from Firestore
+    const fetchCategories = async () => {
+        setLoading(true);
+        setError(null); // Reset error state before fetching
+        try {
+            const querySnapshot = await getDocs(collection(db, 'categories'));
+            const categoriesData = querySnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
 
-      // Set the flat list directly from fetched data
-      setAllCategoriesFlat(categoriesData);
-
-      // Structure categories into a tree format for other uses (if needed)
-      const structured = structureCategories(categoriesData);
-      setCategories(structured); // Update the structured state
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Structure categories into a tree format (remains the same)
-  const structureCategories = (categoriesToStructure) => {
-    const categoryMap = {};
-    const structuredResult = [];
-
-    // Initialize map with all categories
-    categoriesToStructure.forEach(category => {
-      categoryMap[category.id] = { ...category, subcategories: [] };
-    });
-
-    // Build the tree
-    categoriesToStructure.forEach(category => {
-      if (category.parentId && categoryMap[category.parentId]) { // Ensure parent exists in map
-        categoryMap[category.parentId].subcategories.push(categoryMap[category.id]);
-      } else {
-        // Only push top-level categories (those without a parentId or with an invalid parentId)
-        // to the structuredResult array.
-        // This implicitly handles cases where a parentId might point to a non-existent category
-        // by making the child a top-level category in the structured view.
-        if (!category.parentId) {
-            structuredResult.push(categoryMap[category.id]);
+            setAllCategoriesFlat(categoriesData);
+            const structured = structureCategories(categoriesData);
+            setCategories(structured);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
         }
-      }
-    });
+    };
 
-    return structuredResult;
-  };
+    // Structure categories into a tree format
+    const structureCategories = (categoriesToStructure) => {
+        const categoryMap = {};
+        const structuredResult = [];
 
-  // Fetch categories on component mount
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-
-  // Log categories whenever they change (for debugging, optional)
-  useEffect(() => {
-    console.log("Structured Categories:", categories);
-    console.log("Flat Categories for Lookup:", allCategoriesFlat);
-  }, [categories, allCategoriesFlat]);
-
-  // Add a new category
-  const addCategory = async (name, parentId = null) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const slug = name.toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/(^-|-$)/g, '');
-
-      const newCategory = { name, slug };
-      if (parentId) newCategory.parentId = parentId;
-
-      const docRef = await addDoc(collection(db, 'categories'), newCategory);
-      const newCategoryData = { id: docRef.id, ...newCategory };
-
-      // Update parent if this is a subcategory
-      if (parentId) {
-        await updateDoc(doc(db, 'categories', parentId), {
-          subCategories: arrayUnion(docRef.id)
+        // Initialize map with all categories
+        categoriesToStructure.forEach(category => {
+            categoryMap[category.id] = { ...category, subcategories: [] };
         });
-      }
 
-      // Update local state by adding to flat list and then re-structuring
-      setAllCategoriesFlat(prev => [...prev, newCategoryData]);
-      setCategories(prev => structureCategories([...allCategoriesFlat, newCategoryData])); // Important: use the updated flat list here
+        // Build the tree
+        categoriesToStructure.forEach(category => {
+            if (category.parentId && categoryMap[category.parentId]) {
+                categoryMap[category.parentId].subcategories.push(categoryMap[category.id]);
+            } else {
+                if (!category.parentId) {
+                    structuredResult.push(categoryMap[category.id]);
+                }
+            }
+        });
 
-      return docRef.id;
-    } catch (err) {
-      setError(err.message);
-      return null;
-    } finally {
-      setLoading(false);
-    }
-  };
+        return structuredResult;
+    };
 
-  // Return both structured categories and the flat list
-  return { categories, allCategoriesFlat, loading, error, addCategory, fetchCategories };
+    // Fetch categories on component mount
+    useEffect(() => {
+        fetchCategories();
+    }, []);
+
+    // Add a new category
+    const addCategory = async (name, parentId = null) => {
+        setLoading(true); // Keep loading true during add operation
+        setError(null);
+        try {
+            const slug = name.toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/(^-|-$)/g, '');
+
+            const newCategory = { name, slug };
+            if (parentId) newCategory.parentId = parentId;
+
+            const docRef = await addDoc(collection(db, 'categories'), newCategory);
+
+            // Update parent if this is a subcategory (optional: Firebase recommends against nested arrays for large data)
+            // Consider if you truly need 'subCategories' array in parent.
+            // The structureCategories already builds the tree based on parentId.
+            if (parentId) {
+                // This line could potentially be removed if you only rely on parentId for tree building
+                // and don't need a direct list of subCategory IDs in the parent document.
+                // If you keep it, ensure your security rules allow it.
+                await updateDoc(doc(db, 'categories', parentId), {
+                    subCategories: arrayUnion(docRef.id)
+                });
+            }
+
+            // After adding, re-fetch all categories to ensure consistency
+            await fetchCategories(); // <--- IMPORTANT CHANGE HERE
+
+            return docRef.id; // Return the ID of the newly added category
+        } catch (err) {
+            setError(err.message);
+            return null;
+        } finally {
+            setLoading(false); // End loading after fetch completes
+        }
+    };
+
+    return { categories, allCategoriesFlat, loading, error, addCategory, fetchCategories };
 }

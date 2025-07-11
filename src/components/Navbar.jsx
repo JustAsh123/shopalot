@@ -127,7 +127,7 @@ export function Navbar() {
               <li>
                 <a
                   href="/login"
-                  className="btn ml-4 outline outline-2 outline-offset-2 outline-pink-500 text-pink-300 bg-transparent hover:bg-pink-900 hover:text-white transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 px-6 py-2 rounded-full font-bold"
+                  className="btn ml-4 outline-2 outline-offset-2 outline-pink-500 text-pink-300 bg-transparent hover:bg-pink-900 hover:text-white transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 px-6 py-2 rounded-full font-bold"
                 >
                   Login
                 </a>
@@ -183,7 +183,7 @@ export function Navbar() {
                   <a href="/signup" className="btn btn-secondary bg-pink-700 hover:bg-pink-600 text-white transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 w-full text-center">Signup</a>
                 </li>
                 <li>
-                  <a href="/login" className="btn mt-2 outline outline-2 outline-offset-2 outline-pink-500 text-pink-300 bg-transparent hover:bg-pink-900 hover:text-white transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 w-full text-center">Login</a>
+                  <a href="/login" className="btn mt-2 outline-2 outline-offset-2 outline-pink-500 text-pink-300 bg-transparent hover:bg-pink-900 hover:text-white transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 w-full text-center">Login</a>
                 </li>
               </>
             )}

@@ -57,54 +57,57 @@ export function AddAddress({ onAdd }) { // Accept onAdd prop
 
   const saveAddress = async () => {
     if (!validateForm()) {
-      toast.error("Please fill in all required fields");
-      return;
+        toast.error("Please fill in all required fields");
+        return;
     }
 
     try {
-      setIsLoading(true);
-      const newAddress = {
-        id:Date.now().toString(),
-        houseNo,
-        street,
-        locality,
-        pincode,
-        city,
-        state,
-        createdAt: new Date().toISOString() // Optional: add timestamp
-      };
+        setIsLoading(true);
+        const newAddress = {
+            id: Date.now().toString(),
+            houseNo,
+            street,
+            locality,
+            pincode,
+            city,
+            state,
+            createdAt: new Date().toISOString() // Optional: add timestamp
+        };
 
-      const userDocRef = doc(db, "users", currentUser .uid);
-      const userSnap = await getDoc(userDocRef);
-      const currentAddresses = userSnap.exists() ? userSnap.data().addresses || [] : [];
+        const userDocRef = doc(db, "users", currentUser .uid);
+        const userSnap = await getDoc(userDocRef);
+        const currentAddresses = userSnap.exists() ? userSnap.data().addresses || [] : [];
 
-      await updateDoc(userDocRef, {
-        addresses: [...currentAddresses, newAddress]
-      });
+        // Update the addresses in Firestore
+        await updateDoc(userDocRef, {
+            addresses: [...currentAddresses, newAddress]
+        });
 
-      // Call the onAdd function to update the addresses in the parent component
-      onAdd(newAddress); // Pass the new address to the parent
+        // Call the onAdd function to update the addresses in the parent component
+        onAdd(newAddress); // Pass the new address to the parent
 
-      toast.success("Address saved successfully!");
-      
-      // Reset form
-      setHouseNo("");
-      setStreet("");
-      setLocality("");
-      setPincode("");
-      setCity("");
-      setState("");
-      
-      // Close modal
-      document.getElementById("add_address").close();
-      
+        toast.success("Address saved successfully!");
+
+        // Reset form
+        setHouseNo("");
+        setStreet("");
+        setLocality("");
+        setPincode("");
+        setCity("");
+        setState("");
+
+        // Close modal only after successful save
+        document.getElementById("add_address").close();
+
     } catch (error) {
-      console.error("Error saving address:", error);
-      toast.error("Failed to save address");
+        console.error("Error saving address:", error);
+        // Provide a more specific error message
+        toast.error("Failed to save address: " + (error.message || "Unknown error"));
     } finally {
-      setIsLoading(false);
+        setIsLoading(false);
     }
-  };
+};
+
 
   return (
     <>

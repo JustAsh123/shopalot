@@ -20,7 +20,7 @@ export function Profile() {
   const navigate = useNavigate();
 
   // Use the custom hook to manage addresses
-  const { addresses, loading: loadingAddresses, error: addressError, removeAddress, handleAddAddress } = useAddresses();
+  const { addresses, loading: loadingAddresses, error: addressError, removeAddress, setAddresses } = useAddresses();
   
   // Use the custom hook to fetch orders
   const { orders, loading: loadingOrders, error: ordersError } = useFetchOrders(currentUser ?.uid);
@@ -57,6 +57,12 @@ export function Profile() {
   const handleOrderClick = (order) => {
     setSelectedOrder(order);
     setModalIsOpen(true);
+  };
+
+  // Function to handle adding a new address
+  const handleAddAddress = (newAddress) => {
+    // Update the local addresses state
+    setAddresses((prevAddresses) => [...prevAddresses, newAddress]);
   };
 
   const closeModal = () => {

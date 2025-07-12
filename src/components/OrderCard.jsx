@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { X, MapPin, Package, Calendar, DollarSign, ListOrdered } from 'lucide-react'; // Added icons for modal details
+import { useAuth } from "../context/useAuth"; // Import useAuth for isDark state
 
 const OrderCard = ({ order }) => {
   const { id, items, totalAmount, orderDate, status, deliveryAddress } = order;
+  const { isDark } = useAuth(); // Get isDark state
   const [showModal, setShowModal] = useState(false); // State to control modal visibility
   const modalRef = useRef(null); // Ref for the DaisyUI dialog element
 
@@ -64,9 +66,9 @@ const OrderCard = ({ order }) => {
 
   return (
     <>
-      {/* Main Order Card - Dark Mode */}
+      {/* Main Order Card */}
       <div
-        className="bg-base-200 rounded-xl shadow-lg p-5 cursor-pointer hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 font-inter border border-base-300"
+        className={`rounded-xl shadow-lg p-5 cursor-pointer hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 font-inter border border-base-300 ${isDark ? 'bg-gray-800 text-white' : 'bg-white text-black'}`}
         onClick={openModal} // Open modal on card click
       >
         <div className="flex justify-between items-start mb-4">
@@ -81,14 +83,14 @@ const OrderCard = ({ order }) => {
               />
             ))}
             {remainingCount > 0 && (
-              <div className="flex items-center justify-center w-20 h-20 bg-gray-700 text-gray-300 font-semibold rounded-lg border border-gray-700 text-xl">
+              <div className={`flex items-center justify-center w-20 h-20 ${isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-600'} font-semibold rounded-lg border border-gray-700 text-xl`}>
                 +{remainingCount}
               </div>
             )}
           </div>
           <div className="text-right flex flex-col items-end gap-1">
-            <p className="font-bold text-2xl text-white">₹{totalAmount}</p>
-            <p className="text-sm text-gray-400">
+            <p className={`font-bold text-2xl`}>₹{totalAmount}</p>
+            <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
               {orderDate && orderDate.seconds ? new Date(orderDate.seconds * 1000).toLocaleString() : 'N/A'}
             </p>
             <span className={`px-3 py-1 rounded-full text-sm font-semibold mt-2 ${getStatusClasses(status)}`}>
@@ -100,7 +102,7 @@ const OrderCard = ({ order }) => {
 
       {/* DaisyUI Modal for Order Details */}
       <dialog ref={modalRef} id={`order_modal_${id}`} className="modal">
-        <div className="modal-box p-6 md:p-8 rounded-xl shadow-2xl bg-base-200 text-base-content">
+        <div className={`modal-box p-6 md:p-8 rounded-xl shadow-2xl ${isDark ? "bg-gray-800 text-white" : "bg-white text-black"}`}>
           {/* Close button */}
           <form method="dialog">
             <button
@@ -117,7 +119,7 @@ const OrderCard = ({ order }) => {
           </h3>
 
           {/* Order Summary in Modal */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-400 mb-6 border-b border-base-200 pb-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 border-b border-base-200 pb-4">
             <div className="flex items-center gap-2">
               <DollarSign size={20} className="text-green-600" />
               <span className="font-semibold">Total Amount:</span> ₹{totalAmount}
@@ -135,11 +137,11 @@ const OrderCard = ({ order }) => {
 
           {/* Shipping Address in Modal */}
           {deliveryAddress && (
-            <div className="mb-6 p-4 bg-base-200 rounded-lg border border-base-300"> {/* DaisyUI-like card styling */}
-              <h4 className="text-xl font-semibold text-base-content mb-3 flex items-center gap-2">
+            <div className={`mb-6 p-4 rounded-lg border border-base-300 ${isDark ? 'bg-gray-800 text-base-content/80' : 'bg-white text-black'}`}>
+              <h4 className="text-xl font-semibold mb-3 flex items-center gap-2">
                 <MapPin size={22} className="text-primary" /> Shipping Address:
               </h4>
-              <p className="text-base-content/80">
+              <p className="">
                 {deliveryAddress.houseNo}, {deliveryAddress.street}, {deliveryAddress.locality},<br />
                 {deliveryAddress.city}, {deliveryAddress.state} - {deliveryAddress.pincode}
               </p>
@@ -147,12 +149,12 @@ const OrderCard = ({ order }) => {
           )}
 
           {/* Items List in Modal */}
-          <h4 className="text-xl font-semibold text-base-content mb-4 flex items-center gap-2">
+          <h4 className="text-xl font-semibold mb-4 flex items-center gap-2">
             <ListOrdered size={22} className="text-primary" /> Ordered Items:
           </h4>
-          <ul className="space-y-3 max-h-60 overflow-y-auto pr-2"> {/* Added max-height and scroll */}
+          <ul className="space-y-3 max-h-60 overflow-y-auto pr-2">
             {items.map((item, index) => (
-              <li key={`${item.id}-${index}-modal`} className="flex items-center justify-between p-3 bg-base-100 rounded-lg shadow-sm border border-base-200">
+              <li key={`${item.id}-${index}-modal`} className={`flex items-center justify-between p-3 rounded-lg shadow-sm border border-base-200 ${isDark ? 'bg-gray-800' : 'bg-white'}`}>
                 <div className="flex items-center gap-3">
                   <img
                     src={item.imageUrlAtOrder}
@@ -161,11 +163,11 @@ const OrderCard = ({ order }) => {
                     onError={handleImageError}
                   />
                   <div>
-                    <span className="font-medium text-base-content">{item.nameAtOrder}</span>
-                    <span className="text-sm text-base-content/80 block">Qty: {item.qty}</span>
+                    <span className="font-medium">{item.nameAtOrder}</span>
+                    <span className="text-sm block">Qty: {item.qty}</span>
                   </div>
                 </div>
-                <span className="font-bold text-lg text-base-content">₹{(item.priceAtOrder * item.qty).toFixed(2)}</span>
+                <span className="font-bold text-lg">₹{(item.priceAtOrder * item.qty).toFixed(2)}</span>
               </li>
             ))}
           </ul>
@@ -173,7 +175,7 @@ const OrderCard = ({ order }) => {
           {/* Modal Action Buttons (DaisyUI style) */}
           <div className="modal-action mt-6">
             <form method="dialog">
-              <button className="btn btn-primary" onClick={closeModal}>Close</button>
+              <button className={`btn ${isDark?"btn-primary":"btn-outline border-2 bg-red-700 text-white"}`} onClick={closeModal}>Close</button>
             </form>
           </div>
         </div>

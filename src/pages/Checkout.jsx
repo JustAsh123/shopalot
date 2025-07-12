@@ -6,29 +6,29 @@ import { useState, useEffect } from "react";
 import { CreditCard } from "lucide-react";
 import { useCart } from "../context/useCart"; // Import useCart
 import { useProducts } from "../context/useProducts"; // Import useProducts
-import { useAuth } from "../context/useAuth"; // Import useAuth for currentUser and authLoading
-import { Wallet, Landmark, HandCoins, Bitcoin } from "lucide-react";
+import { useAuth } from "../context/useAuth"; // Import useAuth for currentUser  and authLoading
+import { Wallet, Landmark, HandCoins } from "lucide-react";
 import toast from "react-hot-toast";
 import { useOrders } from "../context/useOrders";
 import { useNavigate } from "react-router";
 
 export function Checkout() {
   // Get states from useAuth, useAddresses, useProducts, and useCart
-  const { currentUser, loading: authLoading, userData } = useAuth();
-  const {placeOrder, placingOrder, OrderError} = useOrders()
+  const { currentUser , loading: authLoading, userData, isDark } = useAuth(); // Get isDark state
+  const { placeOrder, placingOrder, OrderError } = useOrders();
   const navigate = useNavigate();
   const {
     addresses,
     loading: addressesLoading,
     error: addressesError,
   } = useAddresses();
-  // Pass currentUser?.uid to useCart to ensure it fetches for the correct user
+  // Pass currentUser  ?.uid to useCart to ensure it fetches for the correct user
   const {
     cartItems,
     loading: cartLoading,
     error: cartError,
-    clearCart
-  } = useCart(currentUser?.uid);
+    clearCart,
+  } = useCart(currentUser  ?.uid);
   const {
     prods,
     loading: productsLoading,
@@ -45,12 +45,12 @@ export function Checkout() {
   });
 
   // Debugging: Log cart items and products to see what's available
-  useEffect(()=>{
-    if(userData.phoneNumber==="" || userData.addresses.length===0){
-      toast.error("Please enter your Phone No. / Address")
-      navigate("/profile")
+  useEffect(() => {
+    if (userData.phoneNumber === "" || userData.addresses.length === 0) {
+      toast.error("Please enter your Phone No. / Address");
+      navigate("/profile");
     }
-  },[])
+  }, []);
 
   const totalPrice = cartItems.reduce((total, item) => {
     const product = productMap[item.id];
@@ -64,8 +64,8 @@ export function Checkout() {
   }, 0);
 
   const handleDeliveryAddress = (addId) => {
-    setDeliverTo(addId)
-    console.log("Selected delivery address ID:", );
+    setDeliverTo(addId);
+    console.log("Selected delivery address ID:", addId);
   };
 
   const handlePlaceOrder = async () => {
@@ -76,12 +76,21 @@ export function Checkout() {
     }
     if (!paymentMethod) {
       // Replaced alert with a toast for consistent UI feedback
-      console.log(paymentMethod)
+      console.log(paymentMethod);
       toast.error("Please select a payment method.");
       return;
     }
     // Logic to place the order
-    const oId = await placeOrder(userData.uid, cartItems, totalPrice.toFixed(2), deliverTo, paymentMethod, prods, addresses, clearCart )
+    const oId = await placeOrder(
+      userData.uid,
+      cartItems,
+      totalPrice.toFixed(2),
+      deliverTo,
+      paymentMethod,
+      prods,
+      addresses,
+      clearCart
+    );
     console.log(
       "Order placed with delivery to:",
       deliverTo,
@@ -89,9 +98,9 @@ export function Checkout() {
       paymentMethod
     );
     // In a real application, you would send this data to your backend
-    toast.success(`Order placed! Total: $${totalPrice.toFixed(2)}`); // Replaced alert with toast\
-    console.log(oId)
-    navigate(`/order-confirm/${oId}`)
+    toast.success(`Order placed! Total: ₹${totalPrice.toFixed(2)}`); // Replaced alert with toast
+    console.log(oId);
+    navigate(`/order-confirm/${oId}`);
     // You might want to clear the cart here or navigate to an order confirmation page
   };
 
@@ -101,7 +110,7 @@ export function Checkout() {
   }
 
   // If auth has loaded and there's no current user, prompt to log in
-  if (authLoading === false && !currentUser) {
+  if (authLoading === false && !currentUser ) {
     return (
       <div className="text-center py-12 text-red-700">
         <div className="text-2xl mb-4">
@@ -124,12 +133,12 @@ export function Checkout() {
   }
 
   return (
-    <div className="grid md:grid-cols-2 sm:grid-cols-1">
+    <div className={`grid md:grid-cols-2 sm:grid-cols-1 ${isDark ? ' text-white' : ' text-black'}`}>
       {/* Assuming Cart component correctly displays items based on cartItems and prods */}
       <Cart isOnCheckout={true} />
       <div className="m-8 flex flex-col gap-8">
         {/* --- Delivery Address Section --- */}
-        <p className="text-2xl text-primary flex flex-row gap-1 items-center">
+        <p className={`text-2xl font-bold flex flex-row gap-1 items-center ${isDark ? 'text-white' : 'text-lime-700'}`}>
           <MapIcon size={24} /> Deliver To:{" "}
         </p>
         <div className="lg:mx-8 md:mx-5 sm:mx-2 mt-4 grid lg:grid-cols-2 md:grid-cols-1 sm:grid-cols-1 gap-2">
@@ -156,7 +165,7 @@ export function Checkout() {
           )}
         </div>
         <div className="space-y-6">
-          <p className="text-2xl text-primary flex items-center gap-2">
+          <p className={`text-2xl font-bold flex items-center gap-2 ${isDark ? 'text-white' : 'text-lime-700'}`}>
             <CreditCard size={24} />
             Payment Options:
           </p>
@@ -186,28 +195,28 @@ export function Checkout() {
             ].map((method) => (
               <label
                 key={method.id}
-                className={`flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-colors ${
+                className={`flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-colors ${isDark?"":"bg-white border-2 border-black"} ${
                   paymentMethod === method.id
                     ? "border-primary bg-primary/10"
-                    : "border-gray-200 hover:border-gray-300"
+                    : `${isDark?"":"border-black/60"}`
                 }`}
               >
                 {method.icon}
-                <span className="flex-1">{method.label}</span>
+                <span className={`flex-1 ${isDark ? 'text-white' : 'text-black'}`}>{method.label}</span>
                 <input
                   type="radio"
                   name="paymentMethod"
                   value={method.id}
                   checked={paymentMethod === method.id}
                   onChange={() => setPaymentMethod(method.id)}
-                  className="h-4 w-4 accent-primary"
+                  className="h-4 w-4 accent-primary bg-white"
                 />
               </label>
             ))}
           </div>
           <div className="flex flex-row justify-end items-center gap-4">
-            <h2 className="text-xl font-bold">₹{totalPrice.toFixed(2)}</h2>
-            <button className="btn btn-outline text-white btn-warning text-xl" onClick={handlePlaceOrder}>Place Order</button>
+            <h2 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-black'}`}>₹{totalPrice.toFixed(2)}</h2>
+            <button className={`btn border-black border-2 text-black text-xl ${isDark ? 'bg-lime-600' : 'bg-lime-600'}`} onClick={handlePlaceOrder}>Place Order</button>
           </div>
         </div>
       </div>

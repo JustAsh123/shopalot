@@ -13,14 +13,22 @@ export function AuthProvider({ children }) {
   const [username, setUsername] = useState(null);
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState(null);
-  const [isDark, setIsDark] = useState(() => localStorage.getItem("isDark") === "true");
-
+   const [isDark, setIsDark] = useState(() => {
+    const saved = localStorage.getItem("isDark") === "true";
+    if (saved) {
+      document.documentElement.classList.add("dark");
+    }
+    return saved;
+  });
   const onThemeChange = () => {
-    setIsDark(prevIsDark => {
-      const newIsDark = !prevIsDark;
-      localStorage.setItem("isDark", newIsDark);
-      return newIsDark;
-    });
+    const newDark = !isDark;
+    setIsDark(newDark);
+    localStorage.setItem("isDark", newDark);
+    if (newDark) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
   };
 
   useEffect(() => {

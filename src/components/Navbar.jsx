@@ -203,11 +203,11 @@ export function Navbar() {
             aria-label="close sidebar"
             className="drawer-overlay"
           ></label>
-          <ul className={`menu ${isDark ? "bg-slate-900 text-pink-300" : ""} min-h-full w-80 p-4 space-y-3 text-lg font-medium shadow-2xl`}>
+          <ul className={`menu ${isDark ? "bg-slate-900 text-pink-300" : "bg-gray-300"} min-h-full w-80 p-4 space-y-3 text-lg font-medium shadow-2xl`}>
             <li>
               <a
                 href="/"
-                className={`block py-2 px-4 ${isDark ? "hover:bg-slate-700" : ""} rounded-lg transition-colors duration-200`}
+                className={`block py-2 px-4 ${isDark ? "hover:bg-slate-700" : "bg-lime-600 border-2"} rounded-lg transition-colors duration-200`}
               >
                 Home
               </a>
@@ -219,7 +219,7 @@ export function Navbar() {
                 <li>
                   <a
                     href="/cart"
-                    className={`block py-2 px-4 ${isDark ? "hover:bg-slate-700" : ""} rounded-lg transition-colors duration-200`}
+                    className={`block py-2 px-4 ${isDark ? "hover:bg-slate-700" : "border-2 border-lime-600 hover:bg-lime-600 hover:border-black"} rounded-lg transition-colors duration-200`}
                   >
                     Cart
                   </a>
@@ -227,7 +227,7 @@ export function Navbar() {
                 <li>
                   <a
                     href="/profile"
-                    className={`block py-2 px-4 ${isDark ? "hover:bg-slate-700" : ""} rounded-lg transition-colors duration-200`}
+                    className={`block py-2 px-4 ${isDark ? "hover:bg-slate-700" : "border-2 border-lime-600 hover:bg-lime-600 hover:border-black"} rounded-lg transition-colors duration-200`}
                   >
                     Profile: {username}
                   </a>
@@ -236,7 +236,7 @@ export function Navbar() {
                   <li>
                     <a
                       href="/admin"
-                      className={`block py-2 px-4 ${isDark ? "hover:bg-slate-700" : ""} rounded-lg transition-colors duration-200`}
+                      className={`block py-2 px-4 ${isDark ? "hover:bg-slate-700" : "border-2 border-lime-600 hover:bg-lime-600 hover:border-black"} rounded-lg transition-colors duration-200`}
                     >
                       Admin Dashboard
                     </a>
@@ -245,7 +245,7 @@ export function Navbar() {
                 <li>
                   <button
                     onClick={handleSignout}
-                    className={`w-full text-left block py-2 px-4 ${isDark ? "hover:bg-red-700" : ""} rounded-lg transition-colors duration-200`}
+                    className={`w-full text-left block py-2 px-4 ${isDark ? "hover:bg-red-700" : "border-2 border-lime-600 hover:bg-lime-600 hover:border-black"} rounded-lg transition-colors duration-200`}
                   >
                     Logout
                   </button>
@@ -256,7 +256,7 @@ export function Navbar() {
                 <li>
                   <a
                     href="/signup"
-                    className={`btn btn-secondary ${isDark ? "bg-pink-700 hover:bg-pink-600 text-white" : ""} transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 w-full text-center`}
+                    className={`btn btn-secondary ${isDark ? "bg-pink-700 hover:bg-pink-600 text-white" : "btn-ghost text-black border-lime-600 border-2 hover:border-black hover:shadow-black hover:bg-lime-600"} transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 w-full text-center`}
                   >
                     Signup
                   </a>
@@ -264,7 +264,7 @@ export function Navbar() {
                 <li>
                   <a
                     href="/login"
-                    className={`btn mt-2 outline-2 outline-offset-2 ${isDark ? "outline-pink-500 text-pink-300 bg-transparent hover:bg-pink-900 hover:text-white" : ""} transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 w-full text-center`}
+                    className={`btn mt-2 ${isDark ? "outline-pink-500 text-pink-300 bg-transparent hover:bg-pink-900 hover:text-white" : "text-black bg-lime-600"} transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 w-full text-center`}
                   >
                     Login
                   </a>

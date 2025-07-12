@@ -1,4 +1,3 @@
-// In ProductCard.jsx
 import { useCart } from "../context/useCart";
 import { useAuth } from "../context/useAuth";
 import { Loader } from "lucide-react";
@@ -12,10 +11,11 @@ function ProductCard({ prodId, id, imageUrl, name, price, desc, category }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { allCategoriesFlat, loading: categoriesLoading } = useCategory();
   const [categoryName, setCategoryName] = useState("Loading Category...");
-
   const { addToCart, removeFromCart, cartItems, updating } = userData
     ? useCart(userData.uid)
     : {};
+  
+  const { isDark } = useAuth(); // Get isDark state
 
   useEffect(() => {
     if (userData) {
@@ -58,7 +58,7 @@ function ProductCard({ prodId, id, imageUrl, name, price, desc, category }) {
     return qty === 0 ? (
       <button
         onClick={handleAddToCart}
-        className="bg-blue-600 px-4 py-2 rounded text-white cursor-pointer"
+        className={`px-4 py-2 rounded text-white cursor-pointer ${isDark ? 'bg-blue-600' : 'bg-lime-600 border-black border-2'}`}
       >
         Add to cart
       </button>
@@ -66,14 +66,14 @@ function ProductCard({ prodId, id, imageUrl, name, price, desc, category }) {
       <div className="flex items-center gap-2">
         <button
           onClick={handleRemoveFromCart}
-          className="bg-red-600 px-2 py-1 rounded text-white cursor-pointer"
+          className={`px-2 py-1 rounded text-white cursor-pointer ${isDark ? 'bg-red-600' : 'bg-red-500'}`}
         >
           -
         </button>
-        <span className="text-white font-medium">{qty}</span>
+        <span className={`font-medium ${isDark ? 'text-white' : 'text-black'}`}>{qty}</span>
         <button
           onClick={handleAddToCart}
-          className="bg-green-600 px-2 py-1 rounded text-white cursor-pointer"
+          className={`px-2 py-1 rounded text-white cursor-pointer ${isDark ? 'bg-green-600' : 'bg-green-500'}`}
         >
           +
         </button>
@@ -83,20 +83,19 @@ function ProductCard({ prodId, id, imageUrl, name, price, desc, category }) {
 
   return (
     <>
-      <div className="card bg-base-200 w-96 shadow-sm shadow-blue-800">
-        <figure className="bg-white" onClick={() => setIsModalOpen(true)}>
-          <img src={imageUrl} alt={name} className="h-70" />
+      <div className={`card w-96 shadow-sm ${isDark ? 'bg-gray-800 text-white shadow-blue-800' : 'bg-white text-black shadow-black'} `}>
+        <figure className={`h-70 ${isDark ? 'bg-white' : 'bg-white'}`} onClick={() => setIsModalOpen(true)}>
+          <img src={imageUrl} alt={name} className="h-70 bg-white" />
         </figure>
-        <div className="card-body">
+        <div className={`card-body ${isDark?"":""}`}>
           <h2 onClick={() => setIsModalOpen(true)} className="card-title">
             {name}
-            {/* Added Tailwind CSS classes for truncation */}
-            <div className="outline outline-success text-sm rounded-lg text-gray-500 p-0.5">
+            <div className={`outline outline-success text-sm rounded-lg ${isDark ? 'text-gray-300' : 'text-gray-500'} p-0.5`}>
               {categoryName}
             </div>
           </h2>
           <div className="card-actions justify-between items-center">
-            <p className="flex flex-row mt-3 text-xl text-yellow-500">
+            <p className={`flex flex-row mt-3 text-xl font-bold ${isDark ? 'text-yellow-400' : 'text-yellow-500'}`}>
               ₹{price}
             </p>
             {renderCartButtons()}

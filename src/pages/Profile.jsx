@@ -12,7 +12,7 @@ import { useFetchOrders } from "../context/useFetchOrders"; // Import the new us
 import OrderCard from "../components/OrderCard"; // Import OrderCard component
 
 export function Profile() {
-  const { currentUser , userData, username, setUserData } = useAuth();
+  const { currentUser  , userData, username, setUserData, isDark } = useAuth(); // Get isDark state
   const [isEditingPhone, setIsEditingPhone] = useState(false);
   const [newPhone, setNewPhone] = useState("");
   const [phoneValid, setPhoneValid] = useState(false);
@@ -23,7 +23,7 @@ export function Profile() {
   const { addresses, loading: loadingAddresses, error: addressError, removeAddress, handleAddAddress } = useAddresses();
   
   // Use the custom hook to fetch orders
-  const { orders, loading: loadingOrders, error: ordersError } = useFetchOrders(currentUser?.uid);
+  const { orders, loading: loadingOrders, error: ordersError } = useFetchOrders(currentUser ?.uid);
   
   const [selectedOrder, setSelectedOrder] = useState(null);
 
@@ -66,7 +66,7 @@ export function Profile() {
 
   return (
     <>
-      <div className="flex flex-col ml-5 mt-5">
+      <div className={`flex flex-col ml-5 mt-5 ${isDark ? ' text-white' : ' text-black'}`}>
         <h1 className="text-4xl">Hello, {username}</h1>
         <hr className="my-8 h-0.5 border-t-0 bg-neutral-100 dark:bg-white/10" />
         
@@ -142,7 +142,7 @@ export function Profile() {
         </div>
 
         {/* Orders Section */}
-        <h2 className="text-2xl mt-8">My Orders:</h2>
+        <h2 className="text-2xl mt-8 mb-4">My Orders:</h2>
         {loadingOrders ? (
           <p>Loading orders...</p>
         ) : ordersError ? (

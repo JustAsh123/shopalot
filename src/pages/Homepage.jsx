@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useCategory } from "../context/useCategory";
 import { useProducts } from "../context/useProducts";
 import { Link } from "react-router-dom"; // Assuming you might want to link categories later
+import { useAuth } from "../context/useAuth"; // Import useAuth for isDark state
 
 // Helper function (can be defined here or in a utils file)
 const getRandomItem = (arr) => {
@@ -10,6 +11,7 @@ const getRandomItem = (arr) => {
 };
 
 function Homepage() {
+    const { isDark } = useAuth(); // Get isDark state
     // --- Category and Product Data Fetching ---
     const { categories, loading: categoriesLoading, error: categoryError } = useCategory();
     const { prods: allProducts, loading: productsLoading, error: productsError } = useProducts();
@@ -17,15 +19,15 @@ function Homepage() {
     // --- Loading and Error Handling ---
     if (categoriesLoading || productsLoading) {
         return (
-            <div className="flex justify-center items-center h-screen">
-                <p className="text-xl font-medium">Loading amazing categories...</p>
+            <div className={`flex justify-center items-center h-screen ${isDark ? 'bg-gray-900' : 'bg-white'}`}>
+                <p className={`text-xl font-medium ${isDark ? 'text-white' : 'text-black'}`}>Loading amazing categories...</p>
             </div>
         );
     }
 
     if (categoryError || productsError) {
         return (
-            <div className="text-center py-12 bg-red-50 border-l-4 border-red-500 text-red-700 p-4 mx-auto max-w-lg rounded-md shadow-sm">
+            <div className={`text-center py-12 ${isDark ? 'bg-red-900 text-red-200' : 'bg-red-50 text-red-700'} border-l-4 border-red-500 p-4 mx-auto max-w-lg rounded-md shadow-sm`}>
                 <p className="font-semibold mb-2">Oops! Something went wrong.</p>
                 <p>Error loading content: {categoryError?.message || productsError?.message}. Please try again later.</p>
             </div>
@@ -34,7 +36,7 @@ function Homepage() {
 
     if (!categories || categories.length === 0) {
         return (
-            <div className="flex justify-center items-center h-screen bg-gray-100 text-gray-500">
+            <div className={`flex justify-center items-center h-screen ${isDark ? 'bg-gray-900' : 'bg-gray-100'} ${isDark ? 'text-gray-300' : 'text-gray-500'}`}>
                 <p className="text-xl">No categories found to display.</p>
             </div>
         );
@@ -51,16 +53,15 @@ function Homepage() {
         return acc;
     }, {});
 
-
     return (
-        <div className="container mx-auto px-4 py-8 shadow-lg rounded-lg my-4">
+        <div className={`container mx-auto px-4 py-8 shadow-lg rounded-lg my-4 ${isDark ? ' text-white' : ' text-black'}`}>
             <h1 className="text-4xl font-extrabold text-center mb-12 tracking-tight">
                 Shop by Category
             </h1>
 
             {categories.map(category => (
                 <section key={category.id} className="mb-16">
-                    <h2 className="text-3xl font-bold mb-8 border-b-2 border-primary-500 pb-3">
+                    <h2 className={`text-3xl font-bold mb-8 border-b-2 ${isDark ? 'border-primary-500' : 'border-primary-700'} pb-3`}>
                         {category.name}
                     </h2>
 
@@ -72,11 +73,10 @@ function Homepage() {
                                 const productCount = productsInSubcategory ? productsInSubcategory.length : 0;
 
                                 return (
-                                    // Using Link here as a placeholder for navigation if you decide to add it
                                     <Link
                                         to={`/category/${subcategory.id}`} // Example: navigate to /category/laptops
                                         key={subcategory.id}
-                                        className="block rounded-xl bg-base-300 border-base-300 shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl group"
+                                        className={`block rounded-xl ${isDark ? 'bg-gray-700' : 'bg-gray-400'} border-base-300 shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl group`}
                                     >
                                         <div className="w-full h-48 sm:h-56 overflow-hidden">
                                             <img
@@ -86,10 +86,10 @@ function Homepage() {
                                             />
                                         </div>
                                         <div className="p-5">
-                                            <h3 className="text-xl font-semibold mb-2 group-hover:text-primary-600 transition-colors duration-200">
+                                            <h3 className={`text-xl font-semibold mb-2 group-hover:text-primary-600 transition-colors duration-200`}>
                                                 {subcategory.name}
                                             </h3>
-                                            <p className="text-sm mt-1">
+                                            <p className={`text-sm mt-1 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
                                                 {productCount > 0 ? `Shop ${productCount} items` : 'No products yet'}
                                             </p>
                                         </div>
@@ -98,7 +98,7 @@ function Homepage() {
                             })}
                         </div>
                     ) : (
-                        <p className=" italic mt-4">No subcategories found for {category.name}.</p>
+                        <p className={`italic mt-4 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>No subcategories found for {category.name}.</p>
                     )}
                 </section>
             ))}

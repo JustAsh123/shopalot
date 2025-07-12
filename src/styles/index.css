@@ -2,3 +2,14 @@
 @plugin "daisyui" {
    themes: light --default, dark --prefersdark;
  }
+
+ /* If using plain CSS */
+html.dark {
+  background: #1D232A;
+  color: white;
+}
+
+html:not(.dark) {
+  background: rgb(201, 201, 201);
+  color: black;
+}

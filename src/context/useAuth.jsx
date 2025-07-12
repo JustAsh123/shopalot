@@ -13,6 +13,15 @@ export function AuthProvider({ children }) {
   const [username, setUsername] = useState(null);
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState(null);
+  const [isDark, setIsDark] = useState(() => localStorage.getItem("isDark") === "true");
+
+  const onThemeChange = () => {
+    setIsDark(prevIsDark => {
+      const newIsDark = !prevIsDark;
+      localStorage.setItem("isDark", newIsDark);
+      return newIsDark;
+    });
+  };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -36,7 +45,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ currentUser , username, userData, setUserData }}>
+    <AuthContext.Provider value={{ currentUser , username, userData, setUserData, onThemeChange, isDark }}>
       {!loading && children}
     </AuthContext.Provider>
   );
@@ -46,3 +55,4 @@ export function AuthProvider({ children }) {
 export function useAuth() {
   return useContext(AuthContext);
 }
+screenX

@@ -2,6 +2,7 @@ import { getAuth, signOut } from "firebase/auth";
 import { toast } from "react-hot-toast";
 import { useAuth } from "../context/useAuth";
 import { useCategory } from "../context/useCategory";
+import { ThemeSwitcher } from "./ThemeSwitcher";
 
 export function Navbar() {
   const {
@@ -213,7 +214,7 @@ export function Navbar() {
               </a>
             </li>
             <div className="divider my-4"></div>
-
+            <ThemeSwitcher />
             {currentUser  ? (
               <>
                 <li>

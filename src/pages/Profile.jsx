@@ -84,7 +84,7 @@ export function Profile() {
                 <>
                   <input
                     type="text"
-                    className={phoneValid ? "input input-success" : "input input-error"}
+                    className={`${phoneValid ? "input input-success" : "input input-error"} ${isDark?"":"bg-white"}`}
                     onChange={(e) => setNewPhone(e.target.value)}
                   />
                   <button className="btn btn-success" onClick={handleEditPhone}>

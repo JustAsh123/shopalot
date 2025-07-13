@@ -93,7 +93,6 @@ export const useFetchOrders = (userId) => {
         // iterate over ordersData again and update each document.
         setOrders(ordersData);
         console.log("Fetched and sorted orders:", ordersData);
-        toast.success("Orders loaded successfully!");
       } catch (err) {
         console.error("Error fetching orders:", err); // Log the actual error
         setError(err);

@@ -14,7 +14,7 @@ export function AddAddress({ onAdd }) { // Accept onAdd prop
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { currentUser  } = useAuth();
+  const { currentUser , isDark } = useAuth();
 
   const validateForm = () => {
     return houseNo.trim() !== "" && street.trim() !== "" && pincode.trim() !== "";
@@ -112,33 +112,33 @@ export function AddAddress({ onAdd }) { // Accept onAdd prop
   return (
     <>
       <button
-        className="btn btn-outline btn-success text-l text-white"
+        className={`btn ${isDark?"btn-outline btn-success":"bg-lime-600 text-black border-2 "} text-l text-white`}
         onClick={() => document.getElementById("add_address").showModal()}
       >
         Add an Address
       </button>
       <dialog id="add_address" className="modal modal-bottom sm:modal-middle">
-        <div className="modal-box">
+        <div className={`modal-box ${isDark?"":"bg-gray-400 "}`}>
           <h3 className="font-bold text-lg">Add an Address</h3>
           <div className="flex flex-col gap-2 my-4 w-full">
             <input
               type="text"
               placeholder="House/Flat/Building Number"
-              className="input w-full"
+              className={`input w-full ${isDark?"":"bg-white"}`}
               value={houseNo}
               onChange={(e) => setHouseNo(e.target.value)}
             />
             <input
               type="text"
               placeholder="Street Address"
-              className="input w-full"
+              className={`input w-full ${isDark?"":"bg-white"}`}
               value={street}
               onChange={(e) => setStreet(e.target.value)}
             />
             <input
               type="text"
               placeholder="Locality/Area Name"
-              className="input w-full"
+              className={`input w-full ${isDark?"":"bg-white"}`}
               value={locality}
               onChange={(e) => setLocality(e.target.value)}
             />
@@ -146,14 +146,14 @@ export function AddAddress({ onAdd }) { // Accept onAdd prop
               <input
                 type="text"
                 placeholder="Postal Code"
-                className="input w-full"
+                className={`input w-full ${isDark?"":"bg-white"}`}
                 value={pincode}
                 onChange={(e) => setPincode(e.target.value)}
               />
               <input
                 type="text"
                 placeholder="City"
-                className="input w-full"
+                className={`input w-full ${isDark?"":"bg-white disabled:bg-gray-600 disabled:text-white"}`}
                 disabled={true}
                 value={city}
               />
@@ -161,13 +161,13 @@ export function AddAddress({ onAdd }) { // Accept onAdd prop
             <input
               type="text"
               placeholder="State"
-              className="input w-full"
+              className={`input w-full ${isDark?"":"bg-white disabled:bg-gray-600 disabled:text-white"}`}
               disabled={true}
               value={state}
             />
           </div>
           <div className="modal-action">
-            <button className="btn btn-success" onClick={saveAddress} disabled={isLoading}>
+            <button className={`btn btn-success border-black border-2`} onClick={saveAddress} disabled={isLoading}>
               {!isLoading ? "Add" : <Loader className="animate-spin" size={18} />}
             </button>
             <form method="dialog">

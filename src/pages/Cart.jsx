@@ -90,19 +90,21 @@ const Cart = ({ isOnCheckout }) => {
                     <td>{item.qty}</td>
                     <td>₹{(product?.price * item.qty).toFixed(2)}</td>
                     {!isOnCheckout && (
-                      <td>
+                      <td className="flex flex-row gap-2">
                         <button
-                          className={`btn btn-success mr-2 ${isDark ? "bg-green-600" : "bg-green-500"}`}
-                          onClick={() => addToCart(currentUser ?.uid, item.id)}
-                        >
-                          +
-                        </button>
-                        <button
-                          className={`btn btn-error ${isDark ? "bg-red-600" : "bg-red-500"}`}
+                          className={`btn text-2xl font-bold text-white btn-error ${isDark ? "bg-red-600" : "bg-red-500"}`}
                           onClick={() => removeFromCart(currentUser ?.uid, item.id)}
                         >
                           -
                         </button>
+
+                        <button
+                          className={`btn text-2xl text-white btn-success mr-2 ${isDark ? "bg-green-600" : "bg-green-500"}`}
+                          onClick={() => addToCart(currentUser ?.uid, item.id)}
+                        >
+                          +
+                        </button>
+                        
                       </td>
                     )}
                   </tr>
